@@ -14,6 +14,11 @@ variable "ip" {
   default = "dhcp"
 }
 
+variable "os" {
+  type = string
+  default = "ubuntu-19.10-standard_19.10-1_amd64.tar.gz"
+}
+
 variable "disksize" {
   type    = string
   default = "2"
@@ -39,42 +44,46 @@ variable "start" {
   default = true
 }
 
+variable "ssh_public_keys" {
+  type    = string
+}
+
+locals {
+  ip   = (var.ip == "dhcp" ? var.ip : "${var.ip}/32")
+  vmid = (var.vmid == 0 && var.ip != "dhcp" ? format("1%04s", element(split(".", var.ip), 3)) : var.vmid)
+}
+
 # Providers
 
 provider "proxmox" { }
 
 ## Provision Container
 
-resource "random_password" "container" {
-  override_special = "_%@"
-  length  = 16
-  special = true  
-}
-
 resource "proxmox_lxc" "container" {
   target_node  = "proxmox"
-  ostemplate   = "local:vztmpl/ubuntu-19.10-standard_19.10-1_amd64.tar.gz"
+  ostemplate   = "local:vztmpl/${var.os}"
   storage      = "local-lvm"
   unprivileged = true
   
   network {
     gw     = "192.168.1.1"
     name   = "eth0"
-    ip     = (var.ip == "dhcp" ? var.ip : "${var.ip}/32")
+    ip     = local.ip
     ip6    = "dhcp"
     bridge = "vmbr0"
     firewall = true
   }
 
-  password = random_password.container.result
+  ssh_public_keys = var.ssh_public_keys
+
   hostname = var.name
-  vmid     = var.vmid
+  vmid     = local.vmid
   cores    = var.cores
   memory   = var.memory
   swap     = var.swap
-  cpuunits = 0
   rootfs   = var.disksize
   start    = var.start
+  cpuunits = 0
 
   lifecycle {
     ignore_changes = [
@@ -94,8 +103,4 @@ resource "proxmox_lxc" "container" {
 
 output "ip" {
   value = var.ip
-}
-
-output "password" {
-  value = random_password.container.result
 }

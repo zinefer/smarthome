@@ -17,6 +17,10 @@ variable "admin_password" {
   type = string
 }
 
+variable "proxmox_pub_keys" {
+  type = string
+}
+
 # Providers
 
 provider "proxmox" {
@@ -38,8 +42,13 @@ module "pihole_container" {
 
   ip    = "192.168.1.5"
   name  = "piholetest"
+  os    = "debian-9.0-standard_9.7-1_amd64.tar.gz"
+  ssh_public_keys = var.proxmox_pub_keys
 }
 
-output "pihole_password" {
-  value = module.pihole_container.password
+# Outputs
+
+output "admin_password" {
+  value     = var.admin_password
+  sensitive = true
 }
