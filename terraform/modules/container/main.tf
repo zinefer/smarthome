@@ -81,8 +81,8 @@ resource "proxmox_lxc" "container" {
   cores    = var.cores
   memory   = var.memory
   swap     = var.swap
-  rootfs   = var.disksize
   start    = var.start
+  rootfs   = "vdisk:${var.disksize}"
   cpuunits = 0
 
   lifecycle {
