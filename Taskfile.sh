@@ -20,6 +20,7 @@ function provision {
 }
 
 function deploy {
+    ANSIBLE_CONFIG=./ansible.cfg \
     PI_ADMIN_PASSWORD=$(echo -n `terraform output admin_password` | sha256sum | awk '{printf "%s",$1 }' | sha256sum | awk '{printf "%s",$1 }') \
     ADMIN_PASSWORD=$(terraform output admin_password) \
     ansible-playbook -i ansible/hosts ansible/site.yml
