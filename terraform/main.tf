@@ -35,6 +35,7 @@ provider "proxmox" {
 
 module "pihole_container" {
   source = "./modules/container"
+  ssh_public_keys = var.proxmox_pub_keys
 
   providers = {
     proxmox = proxmox
@@ -43,8 +44,20 @@ module "pihole_container" {
   ip    = "192.168.1.5"
   name  = "piholetest"
   os    = "debian-9.0-standard_9.7-1_amd64.tar.gz"
-  ssh_public_keys = var.proxmox_pub_keys
 }
+
+module "dev_container" {
+  source = "./modules/container"
+  ssh_public_keys = var.proxmox_pub_keys
+
+  providers = {
+    proxmox = proxmox
+  }
+
+  ip    = "192.168.1.20"
+  name  = "dev"
+}
+
 
 # Outputs
 
