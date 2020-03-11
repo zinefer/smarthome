@@ -1,0 +1,2 @@
+PI_ADMIN_PASSWORD: "{{ lookup('env','PI_ADMIN_PASSWORD') }}"
+ADMIN_PASSWORD: "{{ lookup('env','ADMIN_PASSWORD') }}"

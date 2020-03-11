@@ -10,12 +10,19 @@ function install {
     ln -s $(which terraform-provisioner-proxmox) ~/.terraform.d/plugins/terraform-provisioner-proxmox
     ln -s $(which terraform-provider-proxmox) ~/.terraform.d/plugins/terraform-provider-proxmox
 
+    # Ansible
+    ansible-galaxy install -r ansible/requirements.yml --roles-path ansible/roles
 }
 
 function provision {
     terraform init terraform
     terraform apply terraform
+}
 
+function deploy {
+    PI_ADMIN_PASSWORD=$(echo -n `terraform output admin_password` | sha256sum | awk '{printf "%s",$1 }' | sha256sum | awk '{printf "%s",$1 }') \
+    ADMIN_PASSWORD=$(terraform output admin_password) \
+    ansible-playbook -i ansible/hosts ansible/site.yml
 }
 
 function help {

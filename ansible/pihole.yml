@@ -1,0 +1,18 @@
+---
+- hosts: pihole
+  gather_facts: yes
+  tasks:
+  - name: Add the inventory into /etc/hosts
+    lineinfile:
+      dest: /etc/hosts
+      regexp: '.*{{ item }}$'
+      line: "{{ hostvars[item]['ansible_default_ipv4']['address'] }} {{item}}"
+      state: present
+    when: hostvars[item]['ansible_facts']['default_ipv4'] is defined
+    with_items:
+      - "{{ groups['all'] }}"
+  roles:
+  - role: drew-kun.pihole
+    pihole_setupVars_conf_WEBPASSWD: "{{ PI_ADMIN_PASSWORD }}"
+    pihole_dnsmasq_custom_conf: |
+      
