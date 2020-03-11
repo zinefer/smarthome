@@ -1,5 +1,21 @@
 ---
-# file: site.yml
 - import_playbook: pihole.yml
 
 - import_playbook: dev.yml
+
+# Update /etc/hosts on the PiHole to provide local dns
+- hosts: pihole
+  handlers:
+  - name: Restart DNS
+    command: pihole restartdns
+  tasks:
+  - name: Add the inventory into /etc/hosts
+    notify: Restart DNS
+    lineinfile:
+      dest: /etc/hosts
+      regexp: '.*{{ item }}$'
+      line: "{{ hostvars[item]['ansible_default_ipv4']['address'] }} {{item}}"
+      state: present
+    when: hostvars[item]['ansible_facts']['default_ipv4'] is defined
+    with_items:
+      - "{{ groups['all'] }}"
