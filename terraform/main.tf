@@ -33,6 +33,18 @@ provider "proxmox" {
 
 # Provision Smarthome
 
+module "vpn_vm" {
+  source = "./modules/vm"
+  ssh_public_keys = var.proxmox_pub_keys
+
+  providers = {
+    proxmox = proxmox
+  }
+
+  name = "vpn"
+  ip   = "192.168.1.3"
+}
+
 module "pihole_container" {
   source = "./modules/container"
   ssh_public_keys = var.proxmox_pub_keys
@@ -40,9 +52,9 @@ module "pihole_container" {
   providers = {
     proxmox = proxmox
   }
-
-  ip    = "192.168.1.5"
-  name  = "piholetest"
+  
+  name = "piholetest"
+  ip   = "192.168.1.5"
   os    = "debian-9.0-standard_9.7-1_amd64.tar.gz"
 }
 
@@ -54,10 +66,9 @@ module "dev_container" {
     proxmox = proxmox
   }
 
-  ip    = "192.168.1.20"
-  name  = "dev"
+  name = "dev"
+  ip   = "192.168.1.20"
 }
-
 
 # Outputs
 

@@ -49,7 +49,7 @@ variable "ssh_public_keys" {
 }
 
 locals {
-  ip   = (var.ip == "dhcp" ? var.ip : "${var.ip}/32")
+  ip   = (var.ip == "dhcp" ? var.ip : "${var.ip}/24")
   vmid = (var.vmid == 0 && var.ip != "dhcp" ? format("1%04s", element(split(".", var.ip), 3)) : var.vmid)
 }
 

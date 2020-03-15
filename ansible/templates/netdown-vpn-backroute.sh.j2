@@ -1,0 +1,5 @@
+#!/bin/sh -e
+
+[ "$IFACE" != "eth0" ] || exit 0
+
+ip route del {{ VPN_SUBNET }}

@@ -1,0 +1,8 @@
+---
+- hosts: vpn
+  gather_facts: yes
+  vars:
+    wireguard_preup:
+      - echo 1 > /proc/sys/net/ipv4/ip_forward
+  roles:
+  - role: ansible-role-wireguard
