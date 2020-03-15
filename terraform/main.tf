@@ -66,8 +66,9 @@ module "dev_container" {
     proxmox = proxmox
   }
 
-  name = "dev"
-  ip   = "192.168.1.20"
+  name   = "dev"
+  ip     = "192.168.1.20"
+  mounts = [ {volume="/mnt/pve/hot/code", mp="/code"} ]
 }
 
 # Outputs

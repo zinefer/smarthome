@@ -45,7 +45,12 @@ variable "start" {
 }
 
 variable "ssh_public_keys" {
-  type    = string
+  type = string
+}
+
+variable "mounts" {
+  type = list(map(string))
+  default = []
 }
 
 locals {
@@ -84,6 +89,15 @@ resource "proxmox_lxc" "container" {
   start    = var.start
   rootfs   = "vdisk:${var.disksize}"
   cpuunits = 0
+
+  dynamic "mountpoint" {
+    for_each = var.mounts
+    iterator = mount
+    content {
+      volume = mount.value["volume"]
+      mp = mount.value["mp"]
+    }
+  }
 
   lifecycle {
     ignore_changes = [

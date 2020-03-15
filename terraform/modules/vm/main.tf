@@ -27,9 +27,9 @@ variable "memory" {
 provider "proxmox" { }
 
 resource "proxmox_vm_qemu" "vm" {
-  name        = var.name
   target_node = "proxmox"
   clone       = "debian-cloud-image"
+  name        = var.name
   memory      = var.memory # proxmox_vm_qemu defaults to 512
 
   disk {
@@ -43,4 +43,11 @@ resource "proxmox_vm_qemu" "vm" {
 
   ipconfig0 = "ip=${var.ip}/24,gw=192.168.1.1"
   sshkeys   = var.ssh_public_keys
+
+  lifecycle {
+    ignore_changes = [
+      bootdisk,
+      scsihw
+    ]
+  }
 }
