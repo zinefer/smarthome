@@ -2,3 +2,4 @@
 - src: https://github.com/juju4/ansible-role-wireguard.git
   version: devel
 - src: drew-kun.pihole
+- src: bertvv.samba

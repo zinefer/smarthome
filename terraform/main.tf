@@ -58,6 +58,37 @@ module "pihole_container" {
   os    = "debian-9.0-standard_9.7-1_amd64.tar.gz"
 }
 
+module "files_container" {
+  source = "./modules/container"
+  ssh_public_keys = var.proxmox_pub_keys
+
+  providers = {
+    proxmox = proxmox
+  }
+
+  name   = "files"
+  ip     = "192.168.1.6"
+  mounts = [ 
+    {mp="/mnt/private",    volume="/mnt/pve/cold/private"},
+    {mp="/mnt/code",       volume="/mnt/pve/hot/code"},
+    {mp="/mnt/skunkworks", volume="/mnt/pve/hot/skunkworks"}, 
+    {mp="/mnt/torrents",   volume="/mnt/pve/cold/public/torrents"},
+    {mp="/mnt/media",      volume="/mnt/pve/cold/public/media"},
+  ]
+}
+
+module "homeassistant_container" {
+  source = "./modules/container"
+  ssh_public_keys = var.proxmox_pub_keys
+
+  providers = {
+    proxmox = proxmox
+  }
+
+  name = "home"
+  ip   = "192.168.1.10"
+}
+
 module "dev_container" {
   source = "./modules/container"
   ssh_public_keys = var.proxmox_pub_keys
@@ -68,7 +99,7 @@ module "dev_container" {
 
   name   = "dev"
   ip     = "192.168.1.20"
-  mounts = [ {volume="/mnt/pve/hot/code", mp="/code"} ]
+  mounts = [ {mp="/mnt/code", volume="/mnt/pve/hot/code"} ]
 }
 
 # Outputs

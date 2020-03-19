@@ -1,0 +1,73 @@
+---
+- hosts: files
+  gather_facts: no
+  pre_tasks:
+    - name: Wait 600 seconds for target connection to become reachable/usable
+      wait_for_connection:
+    - name: Gather facts
+      setup:
+    - name: Create a admin user
+      user:
+        name: admin
+        groups: users
+        append: yes
+  roles:
+  - role: bertvv.samba
+  vars:
+    samba_workgroup: WORKGROUP
+    samba_map_to_guest: bad user
+    samba_domain_master: false
+    samba_users: 
+      - name: admin
+        password: "{{ FILES_ADMIN_PWD }}"
+    samba_shares:
+      - name: private
+        path: /mnt/private
+        directory_mode: '0777'
+        create_mode:    '0777'
+        valid_users: admin
+        write_list:  admin
+        owner: nobody
+        group: nogroup
+      
+      - name: code
+        path: /mnt/code
+        directory_mode: '0777'
+        create_mode:    '0777'
+        valid_users: admin
+        write_list:  admin
+        owner: nobody
+        group: nogroup
+      
+      - name: skunkworks
+        path: /mnt/skunkworks
+        directory_mode: '0777'
+        create_mode:    '0777'
+        owner: nobody
+        group: nogroup
+        public:    'yes'
+        writable:  'yes'
+        read_only: 'no'
+        guest_ok:  'yes'
+      
+      - name: torrents
+        path: /mnt/public/torrents
+        directory_mode: '0777'
+        create_mode:    '0777'
+        owner: nobody
+        group: nogroup
+        public:    'yes'
+        writable:  'yes'
+        read_only: 'no'
+        guest_ok:  'yes'
+
+      - name: media
+        path: /mnt/public/media
+        directory_mode: '0777'
+        create_mode:    '0777'
+        owner: nobody
+        group: nogroup
+        public:    'yes'
+        writable:  'yes'
+        read_only: 'no'
+        guest_ok:  'yes'
