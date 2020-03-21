@@ -1,0 +1,27 @@
+---
+- hosts: home
+  gather_facts: no
+  pre_tasks:
+    - name: Include Common
+      include_tasks: common.yml
+  tasks:  
+    - name: Install required system packages
+      apt: name={{ item }} state=latest update_cache=yes
+      loop:
+        - software-properties-common
+        - apparmor-utils
+        - apt-transport-https
+        - avahi-daemon
+        - ca-certificates
+        - curl
+        - dbus
+        - jq
+        - network-manager
+        - socat
+      
+    - name: Install home assistant supervised
+      shell: |
+        systemctl disable ModemManager
+        systemctl stop ModemManager
+        curl -fsSL get.docker.com | sh
+        curl -sL "https://raw.githubusercontent.com/home-assistant/hassio-installer/master/hassio_install.sh" | bash -s

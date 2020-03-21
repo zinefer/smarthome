@@ -9,5 +9,9 @@ piholetest.pintail ansible_host=192.168.1.5
 
 [files]
 files.pintail      ansible_host=192.168.1.6
+
+[home]
+home.pintail       ansible_host=192.168.1.10 ansible_user=debian ansible_become=true
+
 [dev]
 dev.pintail        ansible_host=192.168.1.20

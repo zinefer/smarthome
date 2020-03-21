@@ -22,6 +22,11 @@ variable "memory" {
   default = 256
 }
 
+variable "cores" {
+  type    = string
+  default = "1"
+}
+
 # Providers
 
 provider "proxmox" { }
@@ -31,6 +36,7 @@ resource "proxmox_vm_qemu" "vm" {
   clone       = "debian-cloud-image"
   name        = var.name
   memory      = var.memory # proxmox_vm_qemu defaults to 512
+  cores       = var.cores
 
   disk {
     id       = 0
