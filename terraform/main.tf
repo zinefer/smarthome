@@ -55,7 +55,7 @@ module "pihole_container" {
   
   name = "piholetest"
   ip   = "192.168.1.5"
-  os    = "debian-9.0-standard_9.7-1_amd64.tar.gz"
+  os   = "debian-9.0-standard_9.7-1_amd64.tar.gz"
 }
 
 module "files_container" {
@@ -100,6 +100,25 @@ module "dev_container" {
   name   = "dev"
   ip     = "192.168.1.20"
   mounts = [ {mp="/mnt/code", volume="/mnt/pve/hot/code"} ]
+}
+
+module "torrents_container" {
+  source = "./modules/container"
+  ssh_public_keys = var.proxmox_pub_keys
+
+  providers = {
+    proxmox = proxmox
+  }
+
+  name     = "torrents"
+  ip       = "192.168.1.30"
+  cores    = 2
+  disksize = 3
+  mounts = [
+    {mp="/mnt/torrents", volume="/mnt/pve/cold/public/torrents"},
+    {mp="/mnt/downloads", volume="/mnt/pve/cold/public/downloads"},
+    {mp="/mnt/media", volume="/mnt/pve/cold/public/media"},
+  ]
 }
 
 # Outputs

@@ -1,0 +1,150 @@
+---
+- hosts: rtorrent
+  gather_facts: no
+  pre_tasks:
+    - name: Include Common
+      include_tasks: common.yml
+  vars:
+    rtorrent_configure_ufw: false
+    rtorrent_directories:
+      download:
+        path:  /mnt/downloads
+        user:  nobody
+        group: nogroup
+      watch:
+        path:  /mnt/torrents
+        user:  nobody
+        group: nogroup
+    rtorrent_encryption: require,require_RC4,allow_incoming,try_outgoing
+    rtorrent_scgi_port: 5000
+  
+  roles:
+  - role: ansible-rtorrent
+  
+  post_tasks:
+    - name: Install ruTorrent Dependencies
+      apt:
+        pkg:
+        - nginx
+        - php-fpm
+        - nano 
+        - apache2-utils
+        - subversion
+        - git 
+        - screen 
+        - build-essential
+        - automake
+        - libtool
+        - libcppunit-dev
+        #- libcurl3
+        - libsigc++-2.0-dev
+        - curl
+        - unrar 
+        - unzip
+        - libncurses5-dev
+        - libfuse-dev
+        - libcurl4-openssl-dev
+        - libxml++2.6-dev
+        - php-cli 
+        - php-mbstring
+        - libssl-dev 
+        - mediainfo
+        - procps
+        - python
+        - python-pip
+        - sox
+        - ffmpeg
+    - name: Install cfscrape with pip
+      shell: pip install cfscrape
+
+    - name: Clone xmlrpc
+      shell: git clone https://github.com/mirror/xmlrpc-c.git
+      args:
+        creates: xmlrpc-c
+    - name: Configure xmlrpc
+      shell: ./configure --disable-cplusplus
+      args:
+        chdir: xmlrpc-c/stable/
+    - name: Make xmlrpc
+      shell: make
+      args:
+        chdir: xmlrpc-c/stable/
+    - name: Install xmlrpc
+      shell: make install
+      args:
+        chdir: xmlrpc-c/stable/
+    
+    - name: Remove /var/www
+      file:
+        path: /var/www
+        state: absent
+    - name: Clone ruTorrent 3.9
+      git:
+        repo: https://github.com/Novik/ruTorrent.git
+        dest: /var/www
+        version: v3.9
+        depth: 1
+        force: true
+
+    - name: Configure nginx
+      copy:
+        dest: /etc/nginx/sites-enabled/rutorrent
+        content: |
+          server {
+            listen 80;
+            server_name localhost;
+          
+            root /var/www;
+            index index.html index.htm index.php;
+          
+            location / {
+              try_files $uri $uri/ =404;
+            }
+          
+            location /RPC2 {
+              include /etc/nginx/scgi_params;
+              scgi_pass 127.0.0.1:5000;
+            }
+          
+            location ~ .php$ {
+              fastcgi_split_path_info ^(.+\.php)(/.+)$;
+              fastcgi_pass unix:/run/php/php7.3-fpm.sock;
+              fastcgi_index index.php;
+              include fastcgi_params;
+              fastcgi_param PATH /usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin;
+              fastcgi_param SCRIPT_FILENAME $document_root/$fastcgi_script_name;
+            }
+          }
+    - name: Remove default nginx config
+      file:
+        path: /etc/nginx/sites-enabled/default
+        state: absent
+    - name: Remove default htaccess
+      file:
+        path: /var/www/htaccess-example
+        state: absent
+
+    - name: Clone FlatUI theme
+      subversion:
+        export: yes
+        force: yes
+        repo: https://github.com/exetico/FlatUI/trunk/FlatUI_Dark
+        dest: /var/www/plugins/theme/themes/FlatUI_Dark
+
+    - name: Set permissions on /var/www
+      file:
+        path: /var/www
+        state: directory
+        recurse: true
+        owner: www-data
+        group: www-data
+
+    - name: Restart service nginx
+      service:
+        name: nginx
+        state: restarted
+    - name: Restart service php-fpm
+      service:
+        name: php7.3-fpm
+        state: restarted
+        use: upstart
