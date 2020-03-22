@@ -131,13 +131,23 @@
         repo: https://github.com/exetico/FlatUI/trunk/FlatUI_Dark
         dest: /var/www/plugins/theme/themes/FlatUI_Dark
 
-    - name: Set permissions on /var/www
+    - stat:
+        path: /var/www/share
+      register: share
+    - name: Delete default ruTorrent config directory
       file:
-        path: /var/www
-        state: directory
-        recurse: true
-        owner: www-data
-        group: www-data
+        path: /var/www/share
+        state: absent
+      when: share.stat.islnk is not defined or share.stat.islnk is false
+
+    - name: Link rutorrent config directory
+      file:
+        src: /mnt/config/rtorrent/rutorrent/share
+        dest: /var/www/share
+        state: link
+        force: yes
+        owner: nobody
+        group: nogroup
 
     - name: Restart service nginx
       service:

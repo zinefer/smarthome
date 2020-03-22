@@ -118,6 +118,7 @@ module "torrents_container" {
     {mp="/mnt/torrents", volume="/mnt/pve/cold/public/torrents"},
     {mp="/mnt/downloads", volume="/mnt/pve/cold/public/downloads"},
     {mp="/mnt/media", volume="/mnt/pve/cold/public/media"},
+    {mp="/mnt/config/rtorrent", volume="/mnt/pve/hot/config/rtorrent"},
   ]
 }
 
