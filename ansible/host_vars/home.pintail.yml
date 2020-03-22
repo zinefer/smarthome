@@ -1,0 +1,1 @@
+homeassistant_config_dir: "{{ playbook_dir }}/config/home"

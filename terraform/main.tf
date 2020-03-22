@@ -77,16 +77,19 @@ module "files_container" {
   ]
 }
 
-module "homeassistant_container" {
-  source = "./modules/container"
+module "home_vm" {
+  source = "./modules/vm"
   ssh_public_keys = var.proxmox_pub_keys
 
   providers = {
     proxmox = proxmox
   }
 
-  name = "home"
-  ip   = "192.168.1.10"
+  name     = "home"
+  ip       = "192.168.47.10"
+  memory   = 4096
+  cores    = 4
+  disksize = 4
 }
 
 module "dev_container" {
