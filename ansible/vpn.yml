@@ -1,6 +1,9 @@
 ---
 - hosts: vpn
-  gather_facts: yes
+  gather_facts: no
+  pre_tasks:
+    - name: Include Common
+      include_tasks: common.yml
   vars:
     wireguard_preup:
       - echo 1 > /proc/sys/net/ipv4/ip_forward

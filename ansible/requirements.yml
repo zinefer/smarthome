@@ -3,3 +3,6 @@
   version: devel
 - src: drew-kun.pihole
 - src: bertvv.samba
+#- src: rahul0705.rtorrent
+- src: https://github.com/zinefer/ansible-rtorrent.git
+  version: rtorrent-0.9

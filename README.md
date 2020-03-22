@@ -7,6 +7,8 @@
     - cold
 - Setup a Debian 9 cloud image
 - Download Ubuntu 19.10 and Debian 9 LXC templates
+    - `pveam available`
+    - `pveam download local ubuntu-19.10-standard_19.10-1_amd64.tar.gz`
 - Import a ssh key to proxmox host, use same key as var to terraform
 - The very first VPN route import to proxmox probably wont take, needs a reboot
 - Put `mkdir 0` for hot/cold storage in `/etc/pve/storage.cfg`

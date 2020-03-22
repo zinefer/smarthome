@@ -2,8 +2,11 @@ ADMIN_PASSWORD: "{{ lookup('env','ADMIN_PASSWORD') }}"
 PI_ADMIN_PASSWORD: "{{ lookup('env','PI_ADMIN_PASSWORD') }}"
 
 # VPN
-VPN_SUBNET: 10.0.0.0/24 # If you change this there's another in host_vars/vpn
-wireguard_endpoint: vpn.pintail.casa
+VPN_SUBNET: 10.13.37.0/24 # If you change this there's another in host_vars/vpn
+wireguard_endpoint: pintail.casa
 wireguard_unmanaged_hosts:
-  - host: 'Phone'
-    allowed_ips: "10.0.0.2/32"
+  - host: 'James Phone'
+    allowed_ips: "10.13.37.2/32"
+  wireguard_unmanaged_hosts:
+  - host: 'Blythe Phone'
+    allowed_ips: "10.13.37.3/32"

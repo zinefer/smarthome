@@ -42,7 +42,7 @@ module "vpn_vm" {
   }
 
   name = "vpn"
-  ip   = "192.168.1.3"
+  ip   = "192.168.47.3"
 }
 
 module "pihole_container" {
@@ -53,8 +53,8 @@ module "pihole_container" {
     proxmox = proxmox
   }
   
-  name = "piholetest"
-  ip   = "192.168.1.5"
+  name = "pihole"
+  ip   = "192.168.47.5"
   os   = "debian-9.0-standard_9.7-1_amd64.tar.gz"
 }
 
@@ -67,7 +67,7 @@ module "files_container" {
   }
 
   name   = "files"
-  ip     = "192.168.1.6"
+  ip     = "192.168.47.6"
   mounts = [ 
     {mp="/mnt/private",    volume="/mnt/pve/cold/private"},
     {mp="/mnt/code",       volume="/mnt/pve/hot/code"},
@@ -98,7 +98,7 @@ module "dev_container" {
   }
 
   name   = "dev"
-  ip     = "192.168.1.20"
+  ip     = "192.168.47.20"
   mounts = [ {mp="/mnt/code", volume="/mnt/pve/hot/code"} ]
 }
 
@@ -111,7 +111,7 @@ module "torrents_container" {
   }
 
   name     = "torrents"
-  ip       = "192.168.1.30"
+  ip       = "192.168.47.30"
   cores    = 2
   disksize = 3
   mounts = [
