@@ -1,5 +1,5 @@
 ---
-- hosts: rtorrent
+- hosts: torrents
   gather_facts: no
   pre_tasks:
     - name: Include Common
@@ -13,6 +13,10 @@
         group: nogroup
       watch:
         path:  /mnt/torrents
+        user:  nobody
+        group: nogroup
+      session:
+        path:  /mnt/config/rtorrent/session
         user:  nobody
         group: nogroup
     rtorrent_encryption: require,require_RC4,allow_incoming,try_outgoing

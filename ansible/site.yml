@@ -11,7 +11,7 @@
 - import_playbook: dev.yml
 
 # Media
-- import_playbook: rtorrent.yml
+- import_playbook: torrents.yml
 
 # Add a return route for the vpn to all hosts
 - hosts: all:!vpn

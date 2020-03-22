@@ -16,5 +16,5 @@ home.pintail       ansible_host=192.168.1.10 ansible_user=debian ansible_become=
 [dev]
 dev.pintail        ansible_host=192.168.1.20
 
-[rtorrent]
-rtorrent.pintail   ansible_host=192.168.1.30
+[torrents]
+torrents.pintail   ansible_host=192.168.1.30
