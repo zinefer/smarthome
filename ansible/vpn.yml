@@ -4,8 +4,11 @@
   pre_tasks:
     - name: Include Common
       include_tasks: common.yml
-  vars:
-    wireguard_preup:
-      - echo 1 > /proc/sys/net/ipv4/ip_forward
+    - name: Forward Traffic
+      sysctl:
+        name: net.ipv4.ip_forward
+        value: '1'
+        sysctl_set: yes
+        #reload: yes
   roles:
   - role: ansible-role-wireguard
