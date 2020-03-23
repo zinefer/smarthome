@@ -71,7 +71,7 @@ resource "proxmox_lxc" "container" {
   unprivileged = true
   
   network {
-    gw     = "192.168.1.1"
+    gw     = "192.168.47.1"
     name   = "eth0"
     ip     = local.ip
     ip6    = "dhcp"

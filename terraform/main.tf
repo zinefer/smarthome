@@ -69,11 +69,12 @@ module "files_container" {
   name   = "files"
   ip     = "192.168.47.6"
   mounts = [ 
-    {mp="/mnt/private",    volume="/mnt/pve/cold/private"},
-    {mp="/mnt/code",       volume="/mnt/pve/hot/code"},
-    {mp="/mnt/skunkworks", volume="/mnt/pve/hot/skunkworks"}, 
-    {mp="/mnt/torrents",   volume="/mnt/pve/cold/public/torrents"},
-    {mp="/mnt/media",      volume="/mnt/pve/cold/public/media"},
+    {mp="/mnt/private",       volume="/mnt/pve/cold/private"},
+    {mp="/mnt/code",          volume="/mnt/pve/hot/code"},
+    {mp="/mnt/skunkworks",    volume="/mnt/pve/hot/skunkworks"}, 
+    {mp="/mnt/config/hassio", volume="/mnt/pve/hot/config/hassio"},
+    {mp="/mnt/torrents",      volume="/mnt/pve/cold/public/torrents"},
+    {mp="/mnt/media",         volume="/mnt/pve/cold/public/media"},
   ]
 }
 
@@ -89,7 +90,8 @@ module "home_vm" {
   ip       = "192.168.47.10"
   memory   = 4096
   cores    = 4
-  disksize = 4
+  disksize = 2
+  #disksize = 6
 }
 
 module "dev_container" {
@@ -118,9 +120,9 @@ module "torrents_container" {
   cores    = 2
   disksize = 3
   mounts = [
-    {mp="/mnt/torrents", volume="/mnt/pve/cold/public/torrents"},
-    {mp="/mnt/downloads", volume="/mnt/pve/cold/public/downloads"},
-    {mp="/mnt/media", volume="/mnt/pve/cold/public/media"},
+    {mp="/mnt/torrents",        volume="/mnt/pve/cold/public/torrents"},
+    {mp="/mnt/downloads",       volume="/mnt/pve/cold/public/downloads"},
+    {mp="/mnt/media",           volume="/mnt/pve/cold/public/media"},
     {mp="/mnt/config/rtorrent", volume="/mnt/pve/hot/config/rtorrent"},
   ]
 }

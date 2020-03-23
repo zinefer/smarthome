@@ -18,6 +18,23 @@
         - jq
         - network-manager
         - socat
+        - cifs-utils
+
+    - name: Place Samba credentials file
+      copy:
+        content: |
+          username=hassio
+          password={{ ADMIN_PASSWORD }}
+        dest: "/root/.smbcredentials"
+        mode: 0600
+
+    - name: Mount config directory
+      mount:
+        state: mounted
+        fstype: cifs
+        path: /usr/share/hassio
+        src: //{{ hostvars['files.pintail']['ansible_default_ipv4']['address'] }}/hassio-config
+        opts: credentials=/root/.smbcredentials
       
     - name: Install home assistant supervised
       shell: |

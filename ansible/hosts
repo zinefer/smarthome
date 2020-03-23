@@ -2,7 +2,7 @@
 proxmox.pintail    ansible_host=192.168.47.2
 
 [vpn]
-vpn.pintail        ansible_host=192.168.47.3 ansible_user=debian
+vpn.pintail        ansible_host=192.168.47.3  ansible_user=debian ansible_become=yes
 
 [pihole]
 pihole.pintail     ansible_host=192.168.47.5
@@ -11,7 +11,7 @@ pihole.pintail     ansible_host=192.168.47.5
 files.pintail      ansible_host=192.168.47.6
 
 [home]
-home.pintail       ansible_host=192.168.47.10 ansible_user=debian
+home.pintail       ansible_host=192.168.47.10 ansible_user=debian ansible_become=yes
 
 [dev]
 dev.pintail        ansible_host=192.168.47.20

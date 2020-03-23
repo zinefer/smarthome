@@ -4,9 +4,14 @@
   pre_tasks:
     - name: Include Common
       include_tasks: common.yml
-    - name: Create a admin user
+    - name: Create a admin user for samba
       user:
         name: admin
+        groups: users
+        append: yes
+    - name: Create a hassio user for samba
+      user:
+        name: hassio
         groups: users
         append: yes
   roles:
@@ -18,6 +23,8 @@
     samba_users: 
       - name: admin
         password: "{{ FILES_ADMIN_PWD }}"
+      - name: hassio
+        password: "{{ ADMIN_PASSWORD }}"
     samba_shares:
       - name: private
         path: /mnt/private
@@ -34,6 +41,15 @@
         create_mode:    '0777'
         valid_users: admin
         write_list:  admin
+        owner: nobody
+        group: nogroup
+      
+      - name: hassio-config
+        path: /mnt/config/hassio
+        directory_mode: '0777'
+        create_mode:    '0777'
+        valid_users: hassio admin 
+        write_list:  hassio admin
         owner: nobody
         group: nogroup
       
