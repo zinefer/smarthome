@@ -1,3 +1,0 @@
----
-- hosts: dev
-  gather_facts: yes

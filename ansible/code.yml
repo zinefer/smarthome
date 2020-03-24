@@ -1,0 +1,8 @@
+---
+- hosts: code
+  gather_facts: no
+  pre_tasks:
+    - name: Include Common
+      include_tasks: common.yml
+  roles:
+    - name: pallxk.code_server

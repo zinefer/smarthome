@@ -8,7 +8,7 @@
 - import_playbook: home.yml
 
 # My stuff
-- import_playbook: dev.yml
+- import_playbook: code.yml
 
 # Media
 - import_playbook: torrents.yml

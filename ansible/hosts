@@ -13,8 +13,8 @@ files.pintail      ansible_host=192.168.47.6
 [home]
 home.pintail       ansible_host=192.168.47.10 ansible_user=debian ansible_become=yes
 
-[dev]
-dev.pintail        ansible_host=192.168.47.20
+[code]
+code.pintail       ansible_host=192.168.47.20
 
 [torrents]
 torrents.pintail   ansible_host=192.168.47.30

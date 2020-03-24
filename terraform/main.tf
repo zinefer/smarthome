@@ -93,7 +93,7 @@ module "home_vm" {
   disksize = 6
 }
 
-module "dev_container" {
+module "code_container" {
   source = "./modules/container"
   ssh_public_keys = var.proxmox_pub_keys
 
@@ -101,7 +101,7 @@ module "dev_container" {
     proxmox = proxmox
   }
 
-  name   = "dev"
+  name   = "code"
   ip     = "192.168.47.20"
   mounts = [ {mp="/mnt/code", volume="/mnt/pve/hot/code"} ]
 }
