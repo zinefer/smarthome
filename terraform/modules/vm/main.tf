@@ -51,7 +51,7 @@ resource "proxmox_vm_qemu" "vm" {
   disk {
     id       = 0
     size     = var.disksize
-    type     = "virtio"
+    type     = "scsi"
     storage  = "vdisk"
     iothread = true
     storage_type = "lvm"

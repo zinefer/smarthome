@@ -90,8 +90,7 @@ module "home_vm" {
   ip       = "192.168.47.10"
   memory   = 4096
   cores    = 4
-  disksize = 2
-  #disksize = 6
+  disksize = 6
 }
 
 module "dev_container" {
