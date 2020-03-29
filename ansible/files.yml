@@ -48,6 +48,7 @@
         path: /mnt/config/hassio
         directory_mode: '0777'
         create_mode:    '0777'
+        force_create_mode: '0777'
         valid_users: hassio admin 
         write_list:  hassio admin
         owner: nobody

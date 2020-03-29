@@ -4,5 +4,94 @@
   pre_tasks:
     - name: Include Common
       include_tasks: common.yml
+
+    - name: Ensure the locale exists
+      locale_gen:
+        name: en_US.UTF-8
+        state: present
+    - name: set as default locale
+      command: localectl set-locale en_US.UTF-8
+      
+    - name: Make sure we have a 'wheel' group
+      group:
+        name: wheel
+        state: present
+
+    - name: Allow 'wheel' group to have passwordless sudo
+      lineinfile:
+        dest: /etc/sudoers
+        state: present
+        regexp: '^%wheel'
+        line: '%wheel ALL=(ALL) NOPASSWD: ALL'
+        validate: 'visudo -cf %s'
+
+    - name: Setup my user
+      user: 
+        name: zinefer
+        groups: wheel
+        append: yes
+        createhome: yes
+
+    - name: Set up authorized keys for my user
+      authorized_key: 
+        user: zinefer
+        key: "{{item}}"
+      with_file:
+        - ../id_rsa.pub
+
+    - name: Install Development Tools
+      apt:
+        pkg:
+        - git
+        - fish
+        - unzip
+        - curl
+
+    - name: Unpack dotfiles executable
+      unarchive:
+        src: https://github.com/rhysd/dotfiles/releases/download/v0.2.0/dotfiles_linux_amd64.zip
+        dest: /usr/local/bin/
+        remote_src: yes
+        list_files: yes
+      args:
+        creates: "/usr/local/bin/dotfiles"
+    
+    - name: Clone dotfiles
+      shell: dotfiles clone zinefer --https
+      args:
+        creates: /home/zinefer/dotfiles
+      vars:
+        ansible_user: zinefer
+        ansible_become: false
+    
+    - name: Link dotfiles
+      shell: |
+        dotfiles link
+      args:
+        chdir: /home/zinefer/dotfiles
+        creates: /home/zinefer/.config
+      vars:
+        ansible_user: zinefer
+        ansible_become: false
+    
+    - name: Download oh-my-fish
+      get_url:
+        url: https://get.oh-my.fish
+        dest: /home/zinefer/dotfiles/install-omf
+    
+    - name: Install oh-my-fish.. takes a while...
+      shell: |
+        fish ~/dotfiles/install-omf --path=~/.local/share/omf --config=~/.config/omf --noninteractive
+      args:
+        creates: /home/zinefer/.local/share/omf
+      vars:
+        ansible_user: zinefer
+        ansible_become: false
+    
+    - name: Setup fish as default shell
+      user: 
+        name: zinefer
+        shell: /usr/bin/fish
+
   roles:
     - name: pallxk.code_server

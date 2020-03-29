@@ -103,7 +103,10 @@ module "code_container" {
 
   name   = "code"
   ip     = "192.168.47.20"
-  mounts = [ {mp="/mnt/code", volume="/mnt/pve/hot/code"} ]
+  mounts = [ 
+    {mp="/mnt/code",          volume="/mnt/pve/hot/code"},
+    {mp="/mnt/config/hassio", volume="/mnt/pve/hot/config/hassio"},
+  ]
 }
 
 module "torrents_container" {
