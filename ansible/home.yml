@@ -4,6 +4,10 @@
   pre_tasks:
     - name: Include Common
       include_tasks: common.yml
+  
+  roles:
+    - geerlingguy.docker
+  
   tasks:  
     - name: Install required system packages
       apt: name={{ item }} state=latest update_cache=yes
@@ -33,12 +37,16 @@
         state: mounted
         fstype: cifs
         path: /usr/share/hassio
-        src: //{{ hostvars['files.pintail']['ansible_default_ipv4']['address'] }}/hassio-config
+        src: //{{ hostvars['files.pintail']['ansible_host'] }}/hassio-config
         opts: credentials=/root/.smbcredentials
-      
+
+    - name: Disable ModemManager
+      systemd:
+        name: ModemManager
+        state: stopped
+        enabled: no
+    
     - name: Install home assistant supervised
       shell: |
-        systemctl disable ModemManager
-        systemctl stop ModemManager
-        curl -fsSL get.docker.com | sh
-        curl -sL "https://raw.githubusercontent.com/home-assistant/hassio-installer/master/hassio_install.sh" | bash -s
+        curl -sL "https://raw.githubusercontent.com/home-assistant/installer/master/installer.sh" | bash -s
+    

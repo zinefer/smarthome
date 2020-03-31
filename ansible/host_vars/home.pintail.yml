@@ -1,1 +1,12 @@
-homeassistant_config_dir: "{{ playbook_dir }}/config/home"
+nginx_revproxy_sites:
+  default:
+    ssl: false
+    letsencrypt: false
+
+  home.pintail:
+    domains:
+      - home.pintail
+    upstreams:
+      - { backend_address: localhost, backend_port: 8123 }
+    ssl: false
+    letsencrypt: false
