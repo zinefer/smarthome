@@ -13,37 +13,6 @@
 # Media
 - import_playbook: torrents.yml
 
-# Add a return route for the vpn to all hosts
-- hosts: all:!vpn
-  gather_facts: no
-  tasks:
-  - name: Gather package facts
-    package_facts:
-      manager: "auto"
-  - name: Install if-up.d/vpn-backroute
-    template:
-      src:  templates/netup-vpn-backroute.sh.j2
-      dest: /etc/network/if-up.d/vpn-backroute
-      mode: a+x
-  - name: Install if-down.d/vpn-backroute
-    template:
-      src:  templates/netdown-vpn-backroute.sh.j2
-      dest: /etc/network/if-down.d/vpn-backroute
-      mode: a+x
-  - name: Run if-up.d/vpn-backroute in ifupdown not installed
-    shell: /etc/network/if-up.d/vpn-backroute
-    when: "'ifupdown' not in ansible_facts.packages"
-  - name: Install ifupdown
-    package: 
-      name: ifupdown
-      state: present
-  - name: Check for vpn backroute
-    shell: ip route show
-    register: routes
-  - name: Run if-up.d/vpn-backroute in backroute not exists
-    shell: /etc/network/if-up.d/vpn-backroute
-    ignore_errors: true
-    when: routes.stdout.find("10.13.37.0") == -1
 
 # Update /etc/hosts on the PiHole to provide local dns
 - hosts: pihole
