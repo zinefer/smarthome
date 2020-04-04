@@ -1,0 +1,149 @@
+- hosts: plex
+  gather_facts: no
+  
+  handlers:
+    - name: restart plex
+      service:
+        name: plexmediaserver
+        state: restarted
+    - name: restart tautulli
+      service:
+        name: tautulli
+        state: restarted
+  
+  pre_tasks:
+    - name: Include Common
+      include_tasks: common.yml
+
+    - name: Install required system packages
+      apt: name={{ item }} state=latest update_cache=yes
+      loop:
+        - gpg
+        - git
+        # - python
+
+    - name: Install apt-transport-https
+      apt:
+        name: apt-transport-https
+        state: present
+
+    - name: Create plex config directory
+      file:
+        path: /var/lib/plexmediaserver/Library/Application Support
+        state: directory
+
+    - name: Symlink mounted config to plex config
+      file:
+        src: /mnt/config/plex
+        dest: /var/lib/plexmediaserver/Library/Application Support/Plex Media Server
+        state: link
+
+    - name: Forward port 80 to 32400
+      iptables:
+        table: nat
+        chain: PREROUTING
+        jump: REDIRECT
+        protocol: tcp
+        match: tcp
+        in_interface: eth0
+        destination_port: '80'
+        to_ports: '32400'
+
+    - name: Add Plex apt key (Ubuntu & Debian with systemd)
+      apt_key:
+        url: https://downloads.plex.tv/plex-keys/PlexSign.key
+        state: present
+
+    - name: Add Plex apt repo (Ubuntu & Debian with systemd)
+      apt_repository:
+        repo: deb https://downloads.plex.tv/repo/deb public main
+        state: present
+      changed_when: false
+
+    - name: Apt install Plex
+      apt:
+        name: plexmediaserver
+        state: present
+        update_cache: true
+      notify: restart plex
+
+    # Plexupdate
+
+    - name: Clone plexupdate repository
+      git:
+        repo: https://github.com/mrworf/plexupdate.git
+        dest: /opt/plexupdate/
+
+    - name: Create desired config
+      template:
+        src: plex/plexupdate.conf.j2
+        dest: /etc/plexupdate.conf
+
+    - name: Install latest plex with plexupdate
+      command: /opt/plexupdate/plexupdate.sh --config /etc/plexupdate.conf
+      environment:
+        DEBIAN_FRONTEND: noninteractive
+      changed_when: "'already installed' not in plexupdate_output.stdout"
+      register: plexupdate_output
+      notify: restart plex
+
+    - name: Create cron config
+      template:
+        src: plex/plexupdate.cron.conf.j2
+        dest: /etc/plexupdate.cron.conf
+
+    - name: Create cron job
+      file:
+        src: /opt/plexupdate/extras/cronwrapper
+        dest: /etc/cron.daily/plexupdate
+        state: link
+
+    # Tautulli
+    
+    # - name: Create group
+    #   group:
+    #     name: tautulli
+    #     state: present
+
+    # - name: Create user
+    #   user:
+    #     name: tautulli
+    #     group: tautulli
+    #     createhome: false
+
+    # - name: Clone Tautulli repo
+    #   git:
+    #     repo: https://github.com/Tautulli/Tautulli.git
+    #     dest: /opt/Tautulli/
+    #     force: yes
+
+    # - name: Set permissions
+    #   file:
+    #     path: /opt/Tautulli/
+    #     owner: tautulli
+    #     group: tautulli
+    #     recurse: true
+    #   changed_when: false
+
+    # - name: Move init script for using systemd
+    #   copy:
+    #     src: /opt/Tautulli/init-scripts/init.systemd
+    #     dest: /lib/systemd/system/tautulli.service
+    #     remote_src: yes
+    #     owner: root
+    #     group: root
+    #     mode: 0775
+
+    # - name: Autostart Tautulli and restart service
+    #   systemd:
+    #     name: tautulli
+    #     enabled: true
+    #     daemon_reload: true
+    #   notify: restart tautulli
+
+
+    - name: Autostart Plex
+      service:
+        name: plexmediaserver
+        enabled: true
+      notify: restart plex

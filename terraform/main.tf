@@ -130,6 +130,23 @@ module "torrents_container" {
   ]
 }
 
+module "plex_container" {
+  source = "./modules/container"
+  ssh_public_keys = var.proxmox_pub_keys
+
+  providers = {
+    proxmox = proxmox
+  }
+
+  name     = "plex"
+  ip       = "192.168.47.31"
+  cores    = 2
+  mounts = [
+    {mp="/mnt/config/plex", volume="/mnt/pve/hot/config/plex"},
+    {mp="/mnt/media", volume="/mnt/pve/cold/public/media"},
+  ]
+}
+
 # Outputs
 
 output "admin_password" {
