@@ -13,6 +13,7 @@
 # Media
 - import_playbook: torrents.yml
 
+- import_playbook: sonarr.yml
 
 # Update /etc/hosts on the PiHole to provide local dns
 - hosts: pihole

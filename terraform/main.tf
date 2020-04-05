@@ -147,6 +147,22 @@ module "plex_container" {
   ]
 }
 
+module "sonarr_container" {
+  source = "./modules/container"
+  ssh_public_keys = var.proxmox_pub_keys
+
+  providers = {
+    proxmox = proxmox
+  }
+
+  name     = "sonarr"
+  ip       = "192.168.47.32"
+  mounts = [
+    {mp="/mnt/config/sonarr", volume="/mnt/pve/hot/config/sonarr"},
+    {mp="/mnt/downloads",     volume="/mnt/pve/cold/public/downloads"},
+  ]
+}
+
 # Outputs
 
 output "admin_password" {
