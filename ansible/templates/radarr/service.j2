@@ -1,0 +1,18 @@
+[Unit]
+Description=Radarr Daemon
+After=syslog.target network.target
+
+[Service]
+# Change the user and group variables here.
+User=radarr
+Group=radarr
+
+Type=simple
+
+ExecStart=/usr/bin/mono --debug /opt/Radarr/Radarr.exe -nobrowser -data=/mnt/config/radarr
+TimeoutStopSec=20
+KillMode=process
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target
