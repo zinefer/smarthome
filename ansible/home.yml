@@ -13,6 +13,7 @@
       apt: name={{ item }} state=latest update_cache=yes
       loop:
         - software-properties-common
+        - pulseaudio
         - apparmor-utils
         - apt-transport-https
         - avahi-daemon
