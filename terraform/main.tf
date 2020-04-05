@@ -157,6 +157,7 @@ module "sonarr_container" {
 
   name     = "sonarr"
   ip       = "192.168.47.32"
+  memory   = 512
   mounts = [
     {mp="/mnt/config/sonarr", volume="/mnt/pve/hot/config/sonarr"},
     {mp="/mnt/downloads",     volume="/mnt/pve/cold/public/downloads"},
