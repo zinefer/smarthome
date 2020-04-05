@@ -15,6 +15,7 @@
 
 - import_playbook: sonarr.yml
 - import_playbook: radarr.yml
+- import_playbook: jackett.yml
 
 # Update /etc/hosts on the PiHole to provide local dns
 - hosts: pihole

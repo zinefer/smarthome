@@ -1,0 +1,95 @@
+---
+- hosts: jackett
+  gather_facts: no
+
+  handlers:
+    - name: reload systemctl
+      command: systemctl daemon-reload
+    - name: restart jackett
+      service:
+        name: jackett
+        state: restarted
+
+  pre_tasks:
+    - name: Include Common
+      include_tasks: common.yml
+    - name: Install mono-dev
+      include_tasks: tasks/install-mono.yml
+      
+  tasks:    
+    - name: Create group
+      group:
+        name: jackett
+        state: present
+        system: true
+
+    - name: Create user
+      user:
+        name: jackett
+        group: jackett
+        createhome: false
+
+    - name: Ensure Jackett installation directory exists
+      file:
+        dest: /opt/Jackett
+        owner: jackett
+        group: jackett
+        state: directory
+
+    - name: Get latest releases for Jackett                                                                      
+      uri: 
+        url: https://api.github.com/repos/Jackett/Jackett/releases
+        return_content: yes  
+      register: all_releases
+
+    - set_fact: 
+        latest_release: "{{ all_releases.json[0].assets | to_json | from_json | json_query('[?contains(name, `.Mono.tar.gz`)] | [0]') }}"
+
+    - debug:
+        var: latest_release
+        verbosity: 2
+        
+    - name: Download {{ latest_release.name }}
+      get_url:
+        url: "{{ latest_release.browser_download_url }}"
+        dest: /tmp/Jackett.mono.tar.gz
+      register: download
+
+    - name: Unpack Jackett archive
+      unarchive:
+        src: /tmp/Jackett.mono.tar.gz
+        dest: /opt
+        copy: false
+      become: true
+      become_user: jackett
+      when: download.changed
+      notify:
+        - restart jackett
+    
+    - name: Forward port 80 to 9117
+      iptables:
+        table: nat
+        chain: PREROUTING
+        jump: REDIRECT
+        protocol: tcp
+        match: tcp
+        in_interface: eth0
+        destination_port: '80'
+        to_ports: '9117'
+
+    - name: Deploy Jackett service manifest
+      template:
+        src: jackett/service.j2
+        dest: /etc/systemd/system/jackett.service
+        owner: root
+        group: root
+        mode: 0600
+      notify:
+        - reload systemctl
+        - restart jackett
+
+    - name: Ensure the Jackett service is running and enabled on boot
+      service:
+        name: jackett
+        state: started
+        enabled: yes
