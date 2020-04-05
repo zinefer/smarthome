@@ -24,3 +24,6 @@ plex.pintail       ansible_host=192.168.47.31
 
 [sonarr]
 sonarr.pintail     ansible_host=192.168.47.32
+
+[radarr]
+radarr.pintail     ansible_host=192.168.47.33

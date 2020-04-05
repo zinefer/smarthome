@@ -1,0 +1,18 @@
+---
+- name: Install required system packages
+  apt: 
+    name: gpg
+
+- name: Ensure the Mono GPG key has been imported
+  apt_key:
+    state: present
+    url: http://keyserver.ubuntu.com/pks/lookup?op=get&search=0x3FA7E0328081BFF6A14DA29AA6A19B38D3D831EF
+
+- name: Ensure the Mono Xamarin APT repository is present
+  apt_repository:
+    repo: deb http://download.mono-project.com/repo/debian stable-bionic main
+    state: present
+
+- name: Install Mono
+  apt:
+    name: mono-devel 

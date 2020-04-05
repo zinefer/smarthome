@@ -163,6 +163,23 @@ module "sonarr_container" {
   ]
 }
 
+module "radarr_container" {
+  source = "./modules/container"
+  ssh_public_keys = var.proxmox_pub_keys
+
+  providers = {
+    proxmox = proxmox
+  }
+
+  name     = "radarr"
+  ip       = "192.168.47.33"
+  memory   = 512
+  mounts = [
+    {mp="/mnt/config/radarr", volume="/mnt/pve/hot/config/radarr"},
+    {mp="/mnt/downloads",     volume="/mnt/pve/cold/public/downloads"},
+  ]
+}
+
 # Outputs
 
 output "admin_password" {

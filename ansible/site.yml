@@ -14,6 +14,7 @@
 - import_playbook: torrents.yml
 
 - import_playbook: sonarr.yml
+- import_playbook: radarr.yml
 
 # Update /etc/hosts on the PiHole to provide local dns
 - hosts: pihole

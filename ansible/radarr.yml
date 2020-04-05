@@ -1,0 +1,101 @@
+---
+- hosts: radarr
+  gather_facts: no
+
+  handlers:
+    - name: reload systemctl
+      command: "systemctl daemon-reload"
+    - name: restart radarr
+      service:
+        name: radarr
+        state: restarted
+
+  pre_tasks:
+    - name: Include Common
+      include_tasks: common.yml
+    - name: Install mono-dev
+      include_tasks: tasks/install-mono.yml
+      
+  tasks:
+    - name: Install required system packages
+      apt: name={{ item }} state=latest update_cache=yes
+      loop:
+        - gpg
+        - libmediainfo0v5
+    
+    - name: Create group
+      group:
+        name: radarr
+        state: present
+        system: true
+
+    - name: Create user
+      user:
+        name: radarr
+        group: radarr
+        createhome: false
+
+    - name: Ensure Radarr installation directory exists
+      file:
+        dest: /opt/Radarr
+        owner: radarr
+        group: radarr
+        state: directory
+
+    - name: Get latest releases for Radarr                                                                      
+      uri: 
+        url: https://api.github.com/repos/Radarr/Radarr/releases
+        return_content: yes  
+      register: all_releases
+
+    - set_fact: 
+        latest_release: "{{ all_releases.json[0].assets | to_json | from_json | json_query('[?contains(name, `.linux.tar.gz`)] | [0]') }}"
+
+    - debug:
+        var: latest_release
+        verbosity: 2
+        
+    - name: Download {{ latest_release.name }}
+      get_url:
+        url: "{{ latest_release.browser_download_url }}"
+        dest: /tmp/Radarr.linux.tar.gz
+      register: download
+
+    - name: Unpack Radarr archive
+      unarchive:
+        src: /tmp/Radarr.linux.tar.gz
+        dest: /opt
+        copy: false
+      become: true
+      become_user: radarr
+      when: download.changed
+      notify:
+        - restart radarr
+    
+    - name: Forward port 80 to 7878
+      iptables:
+        table: nat
+        chain: PREROUTING
+        jump: REDIRECT
+        protocol: tcp
+        match: tcp
+        in_interface: eth0
+        destination_port: '80'
+        to_ports: '7878'
+
+    - name: Deploy Radarr service manifest
+      template:
+        src: radarr/service.j2
+        dest: /etc/systemd/system/radarr.service
+        owner: root
+        group: root
+        mode: 0600
+      notify:
+        - reload systemctl
+        - restart radarr
+
+    - name: Ensure the Radarr service is running and enabled on boot
+      service:
+        name: radarr
+        state: started
+        enabled: yes
