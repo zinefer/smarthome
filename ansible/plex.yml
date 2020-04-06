@@ -1,3 +1,4 @@
+---
 - hosts: plex
   gather_facts: no
   
@@ -20,6 +21,7 @@
       loop:
         - gpg
         - git
+        - netfilter-persistent
         # - python
 
     - name: Install apt-transport-https
@@ -48,6 +50,11 @@
         in_interface: eth0
         destination_port: '80'
         to_ports: '32400'
+      register: iptables
+    
+    - name: Save iptables
+      shell: service netfilter-persistent save
+      when: iptables.changed
 
     - name: Add Plex apt key (Ubuntu & Debian with systemd)
       apt_key:

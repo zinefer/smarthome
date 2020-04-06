@@ -22,6 +22,7 @@
       loop:
         - gpg
         - libmediainfo0v5
+        - netfilter-persistent
     
     - name: Create group
       group:
@@ -82,6 +83,11 @@
         in_interface: eth0
         destination_port: '80'
         to_ports: '7878'
+      register: iptables
+    
+    - name: Save iptables
+      shell: service netfilter-persistent save
+      when: iptables.changed
 
     - name: Deploy Radarr service manifest
       template:
