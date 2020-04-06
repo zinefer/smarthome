@@ -21,3 +21,40 @@
 
 My Proxmox host is installed onto a small ssd drive. This leaves only ~150g of space in local-lvm. I have used the raid card to take ~100g from hot storage and use it for virtual disks.
 
+## Plex and friends
+
+Settings to minimize transcoding:
+
+```
+1080p and below
+Container = MP4
+Video = h.264
+Audio = AC3 / ACC
+
+4K
+Container = MP4
+Video = h.265
+Audio AC3
+```
+
+### rTorrent
+
+- Enable autounpacking
+
+### Sonarr / Radarr
+
+- Add rTorrent as a Download Client
+    - Host: `torrents.pintail`
+    - Port: `80`
+    - Url Path: `RPC2`
+    - Category: `tv-sonarr` / `radarr`
+- Add h264/h265 restrictions under Indexers Advanced Settings
+    - Create a rule for each transcoding type mentioned above
+    - Use `h264 h.264 x264` for h264
+    - Use `h265 h.265 hevc x265` for h265
+- Add Jackett Torznab url to indexers
+    - Use apikey from Jackett
+
+### Jackett
+
+- Add tracker to Jackett
