@@ -69,12 +69,12 @@ module "files_container" {
   name   = "files"
   ip     = "192.168.47.6"
   mounts = [ 
-    {mp="/mnt/private",       volume="/mnt/pve/cold/private"},
-    {mp="/mnt/code",          volume="/mnt/pve/hot/code"},
-    {mp="/mnt/skunkworks",    volume="/mnt/pve/hot/skunkworks"}, 
-    {mp="/mnt/config/hassio", volume="/mnt/pve/hot/config/hassio"},
-    {mp="/mnt/torrents",      volume="/mnt/pve/cold/public/torrents"},
-    {mp="/mnt/media",         volume="/mnt/pve/cold/public/media"},
+    {mp="/mnt/private",    volume="/mnt/pve/cold/private"},
+    {mp="/mnt/code",       volume="/mnt/pve/hot/code"},
+    {mp="/mnt/skunkworks", volume="/mnt/pve/hot/skunkworks"}, 
+    {mp="/mnt/config",     volume="/mnt/pve/hot/config"},
+    {mp="/mnt/torrents",   volume="/mnt/pve/cold/public/torrents"},
+    {mp="/mnt/media",      volume="/mnt/pve/cold/public/media"},
   ]
 }
 
@@ -161,6 +161,7 @@ module "sonarr_container" {
   mounts = [
     {mp="/mnt/config/sonarr", volume="/mnt/pve/hot/config/sonarr"},
     {mp="/mnt/downloads",     volume="/mnt/pve/cold/public/downloads"},
+    {mp="/mnt/media",         volume="/mnt/pve/cold/public/media"},
   ]
 }
 
@@ -178,6 +179,42 @@ module "radarr_container" {
   mounts = [
     {mp="/mnt/config/radarr", volume="/mnt/pve/hot/config/radarr"},
     {mp="/mnt/downloads",     volume="/mnt/pve/cold/public/downloads"},
+    {mp="/mnt/media",         volume="/mnt/pve/cold/public/media"},
+  ]
+}
+
+module "jackett_container" {
+  source = "./modules/container"
+  ssh_public_keys = var.proxmox_pub_keys
+
+  providers = {
+    proxmox = proxmox
+  }
+
+  name     = "jackett"
+  ip       = "192.168.47.34"
+  memory   = 512
+  mounts = [
+    {mp="/mnt/config/jackett", volume="/mnt/pve/hot/config/jackett"},
+    {mp="/mnt/downloads",      volume="/mnt/pve/cold/public/downloads"},
+    {mp="/mnt/media",          volume="/mnt/pve/cold/public/media"},
+  ]
+}
+
+module "flexget_container" {
+  source = "./modules/container"
+  ssh_public_keys = var.proxmox_pub_keys
+
+  providers = {
+    proxmox = proxmox
+  }
+
+  name     = "flexget"
+  ip       = "192.168.47.35"
+  mounts = [
+    {mp="/mnt/config/flexget", volume="/mnt/pve/hot/config/flexget"},
+    {mp="/mnt/downloads",      volume="/mnt/pve/cold/public/downloads"},
+    {mp="/mnt/media",          volume="/mnt/pve/cold/public/media"},
   ]
 }
 

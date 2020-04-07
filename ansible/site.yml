@@ -12,6 +12,7 @@
 
 # Media
 - import_playbook: torrents.yml
+- import_playbook: flexget.yml
 
 - import_playbook: sonarr.yml
 - import_playbook: radarr.yml

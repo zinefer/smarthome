@@ -40,6 +40,7 @@ Audio AC3
 ### rTorrent
 
 - Enable autounpacking
+- Create an AutoTools AutoCopy for filter `/sports\/.*/`, path of `/mnt/media` and add the label and name to path
 
 ### Sonarr / Radarr
 

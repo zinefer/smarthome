@@ -30,3 +30,6 @@ radarr.pintail     ansible_host=192.168.47.33
 
 [jackett]
 jackett.pintail    ansible_host=192.168.47.34
+
+[flexget]
+flexget.pintail    ansible_host=192.168.47.35

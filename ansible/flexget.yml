@@ -1,0 +1,43 @@
+---
+- hosts: flexget
+  gather_facts: no
+
+  handlers:
+    - name: reload systemctl
+      command: "systemctl daemon-reload"
+
+  pre_tasks:
+    - name: Include Common
+      include_tasks: common.yml
+      
+  tasks:
+    - name: Install required system packages
+      apt: name={{ item }} state=latest update_cache=yes
+      loop:
+        - gpg
+        - python3
+        - python3-pip
+
+    - name: Create group
+      group:
+        name: flexget
+        state: present
+        system: true
+
+    - name: Create user
+      user:
+        name: flexget
+        group: flexget
+        createhome: false
+    
+    - name: Install Flexget
+      pip:
+        name: flexget
+        #executable: pip3
+    
+    - name: Set crontab to execute Flexget every 5 minutes
+      cron:
+        name: Execute Flexget
+        user: flexget
+        minute: "*/5"
+        job: /usr/local/bin/flexget -c /mnt/config/flexget/config.yml execute
