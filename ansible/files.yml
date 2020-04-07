@@ -44,6 +44,16 @@
         owner: nobody
         group: nogroup
       
+      - name: config
+        path: /mnt/config
+        directory_mode: '0777'
+        create_mode:    '0777'
+        force_create_mode: '0777'
+        valid_users: admin 
+        write_list:  admin
+        owner: nobody
+        group: nogroup
+      
       - name: hassio-config
         path: /mnt/config/hassio
         directory_mode: '0777'
