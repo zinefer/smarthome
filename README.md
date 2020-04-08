@@ -16,8 +16,9 @@
 - Don't let windows fool you with bad cached creds `net use /delete \\FILES` 
 - Pass the usbdevice through to the home vm `qm set 10010 -usb0 host=10c4:8a2a` (reboot)
 - Set DNS under the proxmox node or nothing can get to the internet
-- `qrencode -t ansiutf8 < /etc/wireguard/james-phone.conf`
+- `qrencode -t ansiutf8 < /etc/wireguard/jphone.conf`
 - Add a vpn backroute to the gateway
+- Forward ports: `51337 -> 186` and `51820 -> 3`
 
 My Proxmox host is installed onto a small ssd drive. This leaves only ~150g of space in local-lvm. I have used the raid card to take ~100g from hot storage and use it for virtual disks.
 
@@ -59,3 +60,12 @@ Audio AC3
 ### Jackett
 
 - Add tracker to Jackett
+
+## Home assistant
+
+cd ~
+wget https://github.com/home-assistant/operating-system/releases/download/3.12/hassos_ova-3.12.vmdk.gz
+gunzip -f hassos_ova-3.12.vmdk.gz
+
+## ESPHome
+

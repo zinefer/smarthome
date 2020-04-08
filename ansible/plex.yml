@@ -5,11 +5,11 @@
   handlers:
     - name: restart plex
       service:
-        name: plexmediaserver
+        name:  plexmediaserver
         state: restarted
     - name: restart tautulli
       service:
-        name: tautulli
+        name:  tautulli
         state: restarted
   
   pre_tasks:
@@ -26,50 +26,50 @@
 
     - name: Install apt-transport-https
       apt:
-        name: apt-transport-https
+        name:  apt-transport-https
         state: present
 
     - name: Create plex config directory
       file:
-        path: /var/lib/plexmediaserver/Library/Application Support
+        path:  /var/lib/plexmediaserver/Library/Application Support
         state: directory
 
     - name: Symlink mounted config to plex config
       file:
-        src: /mnt/config/plex
-        dest: /var/lib/plexmediaserver/Library/Application Support/Plex Media Server
+        src:   /mnt/config/plex
+        dest:  /var/lib/plexmediaserver/Library/Application Support/Plex Media Server
         state: link
 
     - name: Forward port 80 to 32400
       iptables:
-        table: nat
-        chain: PREROUTING
-        jump: REDIRECT
+        table:    nat
+        chain:    PREROUTING
+        jump:     REDIRECT
         protocol: tcp
-        match: tcp
+        match:    tcp
         in_interface: eth0
         destination_port: '80'
         to_ports: '32400'
       register: iptables
     
-    - name: Save iptables
+    - name:  Save iptables
       shell: service netfilter-persistent save
-      when: iptables.changed
+      when:  iptables.changed
 
     - name: Add Plex apt key (Ubuntu & Debian with systemd)
       apt_key:
-        url: https://downloads.plex.tv/plex-keys/PlexSign.key
+        url:   https://downloads.plex.tv/plex-keys/PlexSign.key
         state: present
 
     - name: Add Plex apt repo (Ubuntu & Debian with systemd)
       apt_repository:
-        repo: deb https://downloads.plex.tv/repo/deb public main
+        repo:  deb https://downloads.plex.tv/repo/deb public main
         state: present
       changed_when: false
 
     - name: Apt install Plex
       apt:
-        name: plexmediaserver
+        name:  plexmediaserver
         state: present
         update_cache: true
       notify: restart plex
@@ -83,7 +83,7 @@
 
     - name: Create desired config
       template:
-        src: plex/plexupdate.conf.j2
+        src:  plex/plexupdate.conf.j2
         dest: /etc/plexupdate.conf
 
     - name: Install latest plex with plexupdate
@@ -96,13 +96,13 @@
 
     - name: Create cron config
       template:
-        src: plex/plexupdate.cron.conf.j2
+        src:  plex/plexupdate.cron.conf.j2
         dest: /etc/plexupdate.cron.conf
 
     - name: Create cron job
       file:
-        src: /opt/plexupdate/extras/cronwrapper
-        dest: /etc/cron.daily/plexupdate
+        src:   /opt/plexupdate/extras/cronwrapper
+        dest:  /etc/cron.daily/plexupdate
         state: link
 
     # Tautulli

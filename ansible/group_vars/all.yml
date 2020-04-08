@@ -3,9 +3,10 @@ PI_ADMIN_PASSWORD: "{{ lookup('env','PI_ADMIN_PASSWORD') }}"
 
 # VPN
 VPN_SUBNET: 10.13.37.0/24 # If you change this there's another in host_vars/vpn
-wireguard_endpoint: pintail.casa
 wireguard_unmanaged_hosts:
-  - host: james-phone
+  - host: jphone
     allowed_ips: 10.13.37.2/32
-  - host: blythe-phone
+  - host: bphone
     allowed_ips: 10.13.37.3/32
+  - host: jnphone
+    allowed_ips: 10.13.37.4/32

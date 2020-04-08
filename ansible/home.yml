@@ -10,7 +10,7 @@
   
   tasks:  
     - name: Install required system packages
-      apt: name={{ item }} state=latest update_cache=yes
+      apt:  name={{ item }} state=latest update_cache=yes
       loop:
         - software-properties-common
         - pulseaudio
@@ -35,16 +35,16 @@
 
     - name: Mount config directory
       mount:
-        state: mounted
+        state:  mounted
         fstype: cifs
-        path: /usr/share/hassio
-        src: //{{ hostvars['files.pintail']['ansible_host'] }}/hassio-config
-        opts: credentials=/root/.smbcredentials
+        path:   /usr/share/hassio
+        src:    //{{ hostvars['files.pintail']['ansible_host'] }}/hassio-config
+        opts:   credentials=/root/.smbcredentials
 
     - name: Disable ModemManager
       systemd:
-        name: ModemManager
-        state: stopped
+        name:    ModemManager
+        state:   stopped
         enabled: no
     
     - name: Install home assistant supervised

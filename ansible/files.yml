@@ -6,16 +6,18 @@
       include_tasks: common.yml
     - name: Create a admin user for samba
       user:
-        name: admin
+        name:   admin
         groups: users
         append: yes
     - name: Create a hassio user for samba
       user:
-        name: hassio
+        name:   hassio
         groups: users
         append: yes
+  
   roles:
   - role: bertvv.samba
+  
   vars:
     samba_workgroup: WORKGROUP
     samba_map_to_guest: bad user
@@ -46,9 +48,9 @@
       
       - name: config
         path: /mnt/config
-        directory_mode: '0777'
-        create_mode:    '0777'
         force_create_mode: '0777'
+        directory_mode:    '0777'
+        create_mode:       '0777'
         valid_users: admin 
         write_list:  admin
         owner: nobody
@@ -56,9 +58,9 @@
       
       - name: hassio-config
         path: /mnt/config/hassio
-        directory_mode: '0777'
-        create_mode:    '0777'
         force_create_mode: '0777'
+        directory_mode:    '0777'
+        create_mode:       '0777'
         valid_users: hassio admin 
         write_list:  hassio admin
         owner: nobody

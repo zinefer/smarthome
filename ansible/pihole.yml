@@ -4,6 +4,7 @@
   pre_tasks:
     - name: Include Common
       include_tasks: common.yml
+  
   roles:
   - role: drew-kun.pihole
     pihole_setupVars_conf_WEBPASSWD: "{{ PI_ADMIN_PASSWORD }}"

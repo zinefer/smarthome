@@ -5,8 +5,8 @@ variable "name" {
 }
 
 variable "vmid" {
-  type     = number
-  default  = 0
+  type    = number
+  default = 0
 }
 
 variable "ip" {
@@ -15,7 +15,7 @@ variable "ip" {
 }
 
 variable "os" {
-  type = string
+  type    = string
   default = "ubuntu-19.10-standard_19.10-1_amd64.tar.gz"
 }
 
@@ -49,7 +49,7 @@ variable "ssh_public_keys" {
 }
 
 variable "mounts" {
-  type = list(map(string))
+  type    = list(map(string))
   default = []
 }
 
@@ -95,7 +95,7 @@ resource "proxmox_lxc" "container" {
     iterator = mount
     content {
       volume = mount.value["volume"]
-      mp = mount.value["mp"]
+      mp     = mount.value["mp"]
     }
   }
 

@@ -1,8 +1,18 @@
 #- src: githubixx/ansible-role-wireguard.git
 - src: https://github.com/juju4/ansible-role-wireguard.git
   version: devel
+
 - src: drew-kun.pihole
 - src: bertvv.samba
+
+- src: pallxk.code_server
+
 #- src: rahul0705.rtorrent
 - src: https://github.com/zinefer/ansible-rtorrent.git
   version: rtorrent-0.9
+
+- src: geerlingguy.docker
+
+- src: wilmardo.plex
+
+- src:  https://github.com/Nani-o/ansible-role-mono.git

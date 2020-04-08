@@ -5,8 +5,8 @@ variable "name" {
 }
 
 variable "vmid" {
-  type     = number
-  default  = 0
+  type    = number
+  default = 0
 }
 
 variable "ip" {

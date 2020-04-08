@@ -4,10 +4,10 @@
   
   handlers:
     - name: Reload Sonarr service config
-      command: "systemctl daemon-reload"
+      command: systemctl daemon-reload
     - name: Restart Sonarr service
       service: 
-        name: sonarr
+        name:  sonarr
         state: restarted
 
   pre_tasks:
@@ -26,23 +26,23 @@
     
     - name: Create group
       group:
-        name: sonarr
+        name:  sonarr
         state: present
 
     - name: Create user
       user:
-        name: sonarr
+        name:  sonarr
         group: sonarr
         createhome: false
 
     - name: Ensure the Sonarr GPG key has been imported
       apt_key:
+        url:   http://keyserver.ubuntu.com/pks/lookup?op=get&search=0xA236C58F409091A18ACA53CBEBFF6B99D9B78493
         state: present
-        url: http://keyserver.ubuntu.com/pks/lookup?op=get&search=0xA236C58F409091A18ACA53CBEBFF6B99D9B78493
     
     - name: Ensure the Sonarr repository is present
       apt_repository:
-        repo: deb http://apt.sonarr.tv/ master main
+        repo:  deb http://apt.sonarr.tv/ master main
         state: present
 
     - name: Install Sonarr
@@ -51,19 +51,19 @@
 
     - name: Forward port 80 to 8989
       iptables:
-        table: nat
-        chain: PREROUTING
-        jump: REDIRECT
+        table:    nat
+        chain:    PREROUTING
+        jump:     REDIRECT
         protocol: tcp
-        match: tcp
+        match:    tcp
         in_interface: eth0
         destination_port: '80'
         to_ports: '8989'
       register: iptables
     
-    - name: Save iptables
+    - name:  Save iptables
       shell: service netfilter-persistent save
-      when: iptables.changed
+      when:  iptables.changed
     
     - name: Deploy Sonarr service manifest
       template:

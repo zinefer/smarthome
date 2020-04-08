@@ -6,9 +6,9 @@
       include_tasks: common.yml
     - name: Forward Traffic
       sysctl:
-        name: net.ipv4.ip_forward
-        value: '1'
+        name:       net.ipv4.ip_forward
+        value:      '1'
         sysctl_set: yes
-        #reload: yes
+  
   roles:
   - role: ansible-role-wireguard

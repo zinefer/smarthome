@@ -3,11 +3,11 @@
   gather_facts: no
 
   handlers:
-    - name: reload systemctl
+    - name:    reload systemctl
       command: systemctl daemon-reload
     - name: restart jackett
       service:
-        name: jackett
+        name:  jackett
         state: restarted
 
   pre_tasks:
@@ -24,19 +24,19 @@
 
     - name: Create group
       group:
-        name: jackett
-        state: present
+        name:   jackett
+        state:  present
         system: true
 
     - name: Create user
       user:
-        name: jackett
+        name:  jackett
         group: jackett
         createhome: false
 
     - name: Ensure Jackett installation directory exists
       file:
-        dest: /opt/Jackett
+        dest:  /opt/Jackett
         owner: jackett
         group: jackett
         state: directory
@@ -56,13 +56,13 @@
         
     - name: Download {{ latest_release.name }}
       get_url:
-        url: "{{ latest_release.browser_download_url }}"
+        url:  "{{ latest_release.browser_download_url }}"
         dest: /tmp/Jackett.mono.tar.gz
       register: download
 
     - name: Unpack Jackett archive
       unarchive:
-        src: /tmp/Jackett.mono.tar.gz
+        src:  /tmp/Jackett.mono.tar.gz
         dest: /opt
         copy: false
       become: true
@@ -73,33 +73,33 @@
     
     - name: Forward port 80 to 9117
       iptables:
-        table: nat
-        chain: PREROUTING
-        jump: REDIRECT
+        table:    nat
+        chain:    PREROUTING
+        jump:     REDIRECT
         protocol: tcp
-        match: tcp
+        match:    tcp
         in_interface: eth0
         destination_port: '80'
         to_ports: '9117'
       register: iptables
     
-    - name: Save iptables
+    - name:  Save iptables
       shell: service netfilter-persistent save
-      when: iptables.changed
+      when:  iptables.changed
 
     - name: Deploy Jackett service manifest
       template:
-        src: jackett/service.j2
-        dest: /etc/systemd/system/jackett.service
+        src:   jackett/service.j2
+        dest:  /etc/systemd/system/jackett.service
         owner: root
         group: root
-        mode: 0600
+        mode:  0600
       notify:
         - reload systemctl
         - restart jackett
 
     - name: Ensure the Jackett service is running and enabled on boot
       service:
-        name: jackett
-        state: started
+        name:    jackett
+        state:   started
         enabled: yes

@@ -3,11 +3,11 @@
   gather_facts: no
 
   handlers:
-    - name: reload systemctl
-      command: "systemctl daemon-reload"
+    - name:    reload systemctl
+      command: systemctl daemon-reload
     - name: restart radarr
       service:
-        name: radarr
+        name:  radarr
         state: restarted
 
   pre_tasks:
@@ -26,19 +26,19 @@
     
     - name: Create group
       group:
-        name: radarr
-        state: present
+        name:   radarr
+        state:  present
         system: true
 
     - name: Create user
       user:
-        name: radarr
+        name:  radarr
         group: radarr
         createhome: false
 
     - name: Ensure Radarr installation directory exists
       file:
-        dest: /opt/Radarr
+        dest:  /opt/Radarr
         owner: radarr
         group: radarr
         state: directory
@@ -58,28 +58,28 @@
         
     - name: Download {{ latest_release.name }}
       get_url:
-        url: "{{ latest_release.browser_download_url }}"
+        url:  "{{ latest_release.browser_download_url }}"
         dest: /tmp/Radarr.linux.tar.gz
       register: download
 
     - name: Unpack Radarr archive
       unarchive:
-        src: /tmp/Radarr.linux.tar.gz
+        src:  /tmp/Radarr.linux.tar.gz
         dest: /opt
         copy: false
-      become: true
       become_user: radarr
+      become: true
       when: download.changed
       notify:
         - restart radarr
     
     - name: Forward port 80 to 7878
       iptables:
-        table: nat
-        chain: PREROUTING
-        jump: REDIRECT
+        table:    nat
+        chain:    PREROUTING
+        jump:     REDIRECT
         protocol: tcp
-        match: tcp
+        match:    tcp
         in_interface: eth0
         destination_port: '80'
         to_ports: '7878'
@@ -91,17 +91,17 @@
 
     - name: Deploy Radarr service manifest
       template:
-        src: radarr/service.j2
-        dest: /etc/systemd/system/radarr.service
+        src:   radarr/service.j2
+        dest:  /etc/systemd/system/radarr.service
         owner: root
         group: root
-        mode: 0600
+        mode:  0600
       notify:
         - reload systemctl
         - restart radarr
 
     - name: Ensure the Radarr service is running and enabled on boot
       service:
-        name: radarr
-        state: started
+        name:    radarr
+        state:   started
         enabled: yes

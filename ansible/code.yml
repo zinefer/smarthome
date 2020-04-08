@@ -1,6 +1,10 @@
 ---
 - hosts: code
   gather_facts: no
+  vars:
+    code_server_auth: password
+    code_server_host: 0.0.0.0
+    code_server_port: 80
   pre_tasks:
     - name: Include Common
       include_tasks: common.yml
@@ -79,7 +83,7 @@
         url: https://get.oh-my.fish
         dest: /home/zinefer/dotfiles/install-omf
     
-    - name: Install oh-my-fish.. takes a while...
+    - name: Install oh-my-fish
       shell: |
         fish ~/dotfiles/install-omf --path=~/.local/share/omf --config=~/.config/omf --noninteractive
       args:

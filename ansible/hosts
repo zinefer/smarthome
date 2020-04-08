@@ -1,12 +1,9 @@
 [proxmox]
 proxmox.pintail    ansible_host=192.168.47.2
-
 [vpn]
 vpn.pintail        ansible_host=192.168.47.3  ansible_user=debian ansible_become=yes
-
 [pihole]
 pihole.pintail     ansible_host=192.168.47.5
-
 [files]
 files.pintail      ansible_host=192.168.47.6
 
@@ -18,18 +15,13 @@ code.pintail       ansible_host=192.168.47.20
 
 [torrents]
 torrents.pintail   ansible_host=192.168.47.30
-
 [plex]
 plex.pintail       ansible_host=192.168.47.31
-
 [sonarr]
 sonarr.pintail     ansible_host=192.168.47.32
-
 [radarr]
 radarr.pintail     ansible_host=192.168.47.33
-
 [jackett]
 jackett.pintail    ansible_host=192.168.47.34
-
 [flexget]
 flexget.pintail    ansible_host=192.168.47.35

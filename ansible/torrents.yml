@@ -85,10 +85,10 @@
     - name: Clone ruTorrent 3.9
       git:
         repo: https://github.com/Novik/ruTorrent.git
+        force: true
         dest: /var/www
         version: v3.9
         depth: 1
-        force: true
 
     - name: Configure nginx
       copy:
@@ -121,33 +121,33 @@
           }
     - name: Remove default nginx config
       file:
-        path: /etc/nginx/sites-enabled/default
+        path:  /etc/nginx/sites-enabled/default
         state: absent
     - name: Remove default htaccess
       file:
-        path: /var/www/htaccess-example
+        path:  /var/www/htaccess-example
         state: absent
 
     - name: Clone FlatUI theme
       subversion:
         export: yes
-        force: yes
-        repo: https://github.com/exetico/FlatUI/trunk/FlatUI_Dark
-        dest: /var/www/plugins/theme/themes/FlatUI_Dark
+        force:  yes
+        repo:   https://github.com/exetico/FlatUI/trunk/FlatUI_Dark
+        dest:   /var/www/plugins/theme/themes/FlatUI_Dark
 
     - stat:
         path: /var/www/share
       register: share
     - name: Delete default ruTorrent config directory
       file:
-        path: /var/www/share
+        path:  /var/www/share
         state: absent
       when: share.stat.islnk is not defined or share.stat.islnk is false
 
     - name: Link rutorrent config directory
       file:
-        src: /mnt/config/rtorrent/rutorrent/share
-        dest: /var/www/share
+        src:   /mnt/config/rtorrent/rutorrent/share
+        dest:  /var/www/share
         state: link
         force: yes
         owner: nobody
@@ -155,10 +155,10 @@
 
     - name: Restart service nginx
       service:
-        name: nginx
+        name:  nginx
         state: restarted
     - name: Restart service php-fpm
       service:
-        name: php7.3-fpm
+        name:  php7.3-fpm
         state: restarted
-        use: upstart
+        use:   upstart
