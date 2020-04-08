@@ -61,11 +61,3 @@ Audio AC3
 
 - Add tracker to Jackett
 
-## Home assistant
-
-cd ~
-wget https://github.com/home-assistant/operating-system/releases/download/3.12/hassos_ova-3.12.vmdk.gz
-gunzip -f hassos_ova-3.12.vmdk.gz
-
-## ESPHome
-
