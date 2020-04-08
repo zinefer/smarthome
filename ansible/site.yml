@@ -1,36 +1,36 @@
 ---
 # Infra
-# - import_playbook: vpn.yml
-# - import_playbook: pihole.yml
-#- import_playbook: files.yml
+- import_playbook: vpn.yml
+- import_playbook: pihole.yml
+- import_playbook: files.yml
 
-# # # Home
-# - import_playbook: home.yml
+# Home
+- import_playbook: home.yml
 
-# # # My stuff
-# - import_playbook: code.yml
+# My stuff
+- import_playbook: code.yml
 
-# # # Media
-# - import_playbook: torrents.yml
-# - import_playbook: plex.yml
-#- import_playbook: sonarr.yml
-# - import_playbook: radarr.yml
-# - import_playbook: jackett.yml
+# Media
+- import_playbook: torrents.yml
+- import_playbook: plex.yml
+- import_playbook: sonarr.yml
+- import_playbook: radarr.yml
+- import_playbook: jackett.yml
 - import_playbook: flexget.yml
 
-# # Update /etc/hosts on the PiHole to provide local dns
-# - hosts: pihole
-#   handlers:
-#   - name: Restart DNS
-#     command: pihole restartdns
-#   tasks:
-#   - name: Add the inventory into /etc/hosts
-#     notify: Restart DNS
-#     lineinfile:
-#       dest: /etc/hosts
-#       regexp: '.*{{ item }}$'
-#       line: "{{ hostvars[item]['ansible_host'] }} {{item}}"
-#       state: present
-#     when: hostvars[item]['ansible_host'] is defined
-#     with_items:
-#       - "{{ groups['all'] }}"
+# Update /etc/hosts on the PiHole to provide local dns
+- hosts: pihole
+  handlers:
+  - name: Restart DNS
+    command: pihole restartdns
+  tasks:
+  - name: Add the inventory into /etc/hosts
+    notify: Restart DNS
+    lineinfile:
+      dest: /etc/hosts
+      regexp: '.*{{ item }}$'
+      line: "{{ hostvars[item]['ansible_host'] }} {{item}}"
+      state: present
+    when: hostvars[item]['ansible_host'] is defined
+    with_items:
+      - "{{ groups['all'] }}"
