@@ -140,7 +140,8 @@ module "plex_container" {
 
   name     = "plex"
   ip       = "192.168.47.31"
-  cores    = 2
+  cores    = 3
+  memory   = 2048
   mounts = [
     {mp="/mnt/config/plex", volume="/mnt/pve/hot/config/plex"},
     {mp="/mnt/media", volume="/mnt/pve/cold/public/media"},
