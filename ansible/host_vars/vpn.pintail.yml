@@ -1,4 +1,4 @@
-wireguard_endpoint: vpn
+wireguard_endpoint: "{{ HOUSE_DOMAIN }}"
 wireguard_address:  10.13.37.1/24
 wireguard_unmanaged_hosts:
   - host: jphone

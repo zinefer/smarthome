@@ -13,10 +13,6 @@ variable "proxmox_password" {
   type = string
 }
 
-variable "admin_password" {
-  type = string
-}
-
 variable "proxmox_pub_keys" {
   type = string
 }
@@ -217,11 +213,4 @@ module "flexget_container" {
     {mp="/mnt/downloads",      volume="/mnt/pve/cold/public/downloads"},
     {mp="/mnt/media",          volume="/mnt/pve/cold/public/media"},
   ]
-}
-
-# Outputs
-
-output "admin_password" {
-  value     = var.admin_password
-  sensitive = true
 }

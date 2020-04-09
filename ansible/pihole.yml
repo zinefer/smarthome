@@ -4,10 +4,17 @@
   pre_tasks:
     - name: Include Common
       include_tasks: common.yml
-  
+    
+    - name: Encode ADMIN_PASSWORD
+      local_action:
+        module: shell
+        _raw_params: |
+          echo -n `{{ ADMIN_PASSWORD }}` | sha256sum | awk '{printf "%s",$1 }' | sha256sum | awk '{printf "%s",$1 }'
+      register: pi_admin_password
+
   roles:
   - role: drew-kun.pihole
-    pihole_setupVars_conf_WEBPASSWD: "{{ PI_ADMIN_PASSWORD }}"
+    pihole_setupVars_conf_WEBPASSWD: "{{ pi_admin_password.stdout }}"
     pihole_dnsmasq_custom_conf: ""
     pihole_setupVars_conf: |
       DNSMASQ_LISTENING=single

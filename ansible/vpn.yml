@@ -4,7 +4,7 @@
   pre_tasks:
     - name: Include Common
       include_tasks: common.yml
-    
+
     - name: Install qrencode
       apt:
         name: qrencode
