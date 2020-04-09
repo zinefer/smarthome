@@ -1,6 +1,7 @@
 #- src: githubixx/ansible-role-wireguard.git
 - src: https://github.com/juju4/ansible-role-wireguard.git
   version: devel
+- src: https://github.com/openstack/ansible-hardening.git
 
 - src: drew-kun.pihole
 - src: bertvv.samba

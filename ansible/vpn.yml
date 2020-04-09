@@ -4,6 +4,10 @@
   pre_tasks:
     - name: Include Common
       include_tasks: common.yml
+    
+    - name: Install qrencode
+      apt:
+        name: qrencode
     - name: Forward Traffic
       sysctl:
         name:       net.ipv4.ip_forward
@@ -11,4 +15,5 @@
         sysctl_set: yes
   
   roles:
-  - role: ansible-role-wireguard
+    - ansible-role-wireguard
+    - ansible-hardening
