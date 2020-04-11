@@ -32,6 +32,12 @@ function galaxy {
     ansible-galaxy install -r ansible/requirements.yml --roles-path ansible/roles
 }
 
+function vault {
+    file="ansible/group_vars/$1.yml"
+    [ ! -f $file ] && file="ansible/host_vars/$1.yml"
+    [ -f $file ] && ansible-vault edit $file --vault-password-file ./pass.sh
+}
+
 function clear-hosts {
     function clr {
         ssh-keygen -f ~/.ssh/known_hosts -R $1.pintail
@@ -79,7 +85,7 @@ function deploy {
 function destroy {
     host=${1?}
     (_isVm $host) && type="vm" || type="container"
-    echo "terraform destroy -target=module.${host}_${type} terraform"
+    terraform destroy -target=module.${host}_${type} terraform
 }
 
 function help {
