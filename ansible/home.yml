@@ -24,6 +24,7 @@
         - network-manager
         - socat
         - cifs-utils
+        - netfilter-persistent
 
     - name: Place Samba credentials file
       copy:
@@ -46,8 +47,23 @@
         name:    ModemManager
         state:   stopped
         enabled: no
+
+    - name: Forward port 80 to 8123
+      iptables:
+        table:    nat
+        chain:    PREROUTING
+        jump:     REDIRECT
+        protocol: tcp
+        match:    tcp
+        in_interface: eth0
+        destination_port: '80'
+        to_ports: '8123'
+      register: iptables
+    
+    - name: Save iptables
+      shell: service netfilter-persistent save
+      when: iptables.changed
     
     - name: Install home assistant supervised
       shell: |
         curl -sL "https://raw.githubusercontent.com/home-assistant/installer/master/installer.sh" | bash -s
-    
