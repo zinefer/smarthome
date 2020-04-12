@@ -78,7 +78,7 @@
         guest_ok:  'yes'
       
       - name: torrents
-        path: /mnt/public/torrents
+        path: /mnt/torrents
         directory_mode: '0777'
         create_mode:    '0777'
         owner: nobody
@@ -89,7 +89,7 @@
         guest_ok:  'yes'
 
       - name: media
-        path: /mnt/public/media
+        path: /mnt/media
         directory_mode: '0777'
         create_mode:    '0777'
         owner: nobody
