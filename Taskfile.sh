@@ -88,6 +88,12 @@ function destroy {
     terraform destroy -target=module.${host}_${type} terraform
 }
 
+function ssh {
+    host=${1?}
+    (_isVm $host) && user="debian" || user="root"
+    /usr/bin/ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null ${user}@${host}.pintail
+}
+
 function help {
     echo "$0 <task> <args>"
     echo "Tasks:"
