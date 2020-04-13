@@ -214,3 +214,15 @@ module "flexget_container" {
     {mp="/mnt/media",          volume="/mnt/pve/cold/public/media"},
   ]
 }
+
+module "test_container" {
+  source = "./modules/container"
+  ssh_public_keys = var.proxmox_pub_keys
+
+  providers = {
+    proxmox = proxmox
+  }
+  
+  name = "test"
+  ip   = "192.168.47.47"
+}

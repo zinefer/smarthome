@@ -1,7 +1,27 @@
+---
 - hosts: pihole
   handlers:
   - name:    Restart DNS
     command: pihole restartdns
+  tasks:
+  - name:   Add the inventory into /etc/hosts
+    notify: Restart DNS
+    lineinfile:
+      dest:   /etc/hosts
+      regexp: '.*{{ item }}$'
+      line:   "{{ hostvars[item]['ansible_host'] }} {{item}}"
+      state:  present
+    when: hostvars[item]['ansible_host'] is defined
+    with_items:
+      - "{{ groups['all'] }}"
+
+
+- hosts: test
+  handlers:
+  - name:    Restart DNS
+    service:
+      name:  AdGuardHome
+      state: restarted
   tasks:
   - name:   Add the inventory into /etc/hosts
     notify: Restart DNS
