@@ -1,9 +1,6 @@
 ---
 - hosts: torrents
   gather_facts: no
-  pre_tasks:
-    - name: Include Common
-      include_tasks: common.yml
   vars:
     rtorrent_configure_ufw: false
     rtorrent_directories:
@@ -21,6 +18,17 @@
         group: nogroup
     rtorrent_encryption: require,require_RC4,allow_incoming,try_outgoing
     rtorrent_scgi_port: 5000
+
+  handlers:
+    - name: restart php
+      service:
+        name:  php7.3-fpm
+        state: restarted
+        use:   upstart
+
+  pre_tasks:
+    - name: Include Common
+      include_tasks: common.yml
   
   roles:
   - role: ansible-rtorrent
@@ -31,7 +39,7 @@
         pkg:
         - nginx
         - php-fpm
-        - nano 
+        - nano
         - apache2-utils
         - subversion
         - git 
@@ -58,8 +66,18 @@
         - python-pip
         - sox
         - ffmpeg
+
+    - name: Set date.timezone for CLI
+      become: true
+      lineinfile:
+        dest: /etc/php/7.3/cli/php.ini
+        regexp: "date.timezone ="
+        line: 'date.timezone = "{{ TIMEZONE }}"'
+      notify: restart php
+
     - name: Install cfscrape with pip
-      shell: pip install cfscrape
+      pip:
+        name: cfscrape
 
     - name: Clone xmlrpc
       shell: git clone https://github.com/mirror/xmlrpc-c.git
@@ -82,6 +100,7 @@
       file:
         path: /var/www
         state: absent
+    
     - name: Clone ruTorrent 3.9
       git:
         repo: https://github.com/Novik/ruTorrent.git
@@ -127,7 +146,6 @@
       file:
         path:  /var/www/htaccess-example
         state: absent
-
     - name: Clone FlatUI theme
       subversion:
         export: yes
@@ -153,12 +171,4 @@
         owner: nobody
         group: nogroup
 
-    - name: Restart service nginx
-      service:
-        name:  nginx
-        state: restarted
-    - name: Restart service php-fpm
-      service:
-        name:  php7.3-fpm
-        state: restarted
-        use:   upstart
+    - name: Enable
