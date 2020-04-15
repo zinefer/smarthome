@@ -3,6 +3,7 @@
 - import_playbook: vpn.yml
 - import_playbook: pihole.yml
 - import_playbook: files.yml
+- import_playbook: metrics.yml
 
 # Home
 - import_playbook: home.yml

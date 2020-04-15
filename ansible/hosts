@@ -6,6 +6,8 @@ vpn.pintail        ansible_host=192.168.47.3  ansible_user=debian ansible_become
 pihole.pintail     ansible_host=192.168.47.5
 [files]
 files.pintail      ansible_host=192.168.47.6
+[metrics]
+metrics.pintail    ansible_host=192.168.47.7
 
 [home]
 home.pintail       ansible_host=192.168.47.10 ansible_user=debian ansible_become=yes

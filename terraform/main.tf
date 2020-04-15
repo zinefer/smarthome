@@ -74,6 +74,18 @@ module "files_container" {
   ]
 }
 
+module "metrics_container" {
+  source = "./modules/container"
+  ssh_public_keys = var.proxmox_pub_keys
+
+  providers = {
+    proxmox = proxmox
+  }
+
+  name   = "metrics"
+  ip     = "192.168.47.7"
+}
+
 module "home_vm" {
   source = "./modules/vm"
   ssh_public_keys = var.proxmox_pub_keys

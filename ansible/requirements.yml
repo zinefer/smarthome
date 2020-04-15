@@ -5,6 +5,8 @@
 
 - src: drew-kun.pihole
 - src: bertvv.samba
+- src: heytrav.influxdb
+- src: cloudalchemy.grafana
 
 - src: pallxk.code_server
 
