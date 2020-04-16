@@ -53,14 +53,16 @@ function import {
         ip=$2
 
         [[ $host == "proxmox" ]] && return
+        
+        id="1$(printf '%04d\n' ${ip##*.})"
+        
+        grep -q $id terraform.tfstate && return
 
         if (_isVm $host); then
             type="vm.proxmox_vm_qemu.vm"
         else
             type="container.proxmox_lxc.container"
         fi
-
-        id="1$(printf '%04d\n' ${ip##*.})"
 
         terraform import -config terraform module.${host}_${type} proxmox/lxc/${id}
     }
