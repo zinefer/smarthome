@@ -96,6 +96,14 @@ function ssh {
     /usr/bin/ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null ${user}@${host}.pintail
 }
 
+function renew {
+    TARGET=${1?}
+    destroy $TARGET
+    provision
+    import
+    deploy $TARGET
+}
+
 function help {
     echo "$0 <task> <args>"
     echo "Tasks:"
