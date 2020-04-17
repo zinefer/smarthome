@@ -69,6 +69,7 @@ module "files_container" {
     {mp="/mnt/code",       volume="/mnt/pve/hot/code"},
     {mp="/mnt/skunkworks", volume="/mnt/pve/hot/skunkworks"}, 
     {mp="/mnt/config",     volume="/mnt/pve/hot/config"},
+    {mp="/mnt/storage",    volume="/mnt/pve/cold/storage"},
     {mp="/mnt/torrents",   volume="/mnt/pve/cold/public/torrents"},
     {mp="/mnt/media",      volume="/mnt/pve/cold/public/media"},
   ]
