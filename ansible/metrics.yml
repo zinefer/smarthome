@@ -2,9 +2,22 @@
 - hosts: metrics
   gather_facts: no
   vars:
+    grafana_data_dir: /mnt/storage/grafana/data
     grafana_security:
       admin_user: admin
       admin_password: "{{ ADMIN_PASSWORD }}"
+    grafana_datasources:
+      - name: InfluxDB
+        type: influxdb
+        database: telegraf
+        access: proxy
+        url: http://localhost:8086
+    grafana_dashboards:
+      - dashboard_id: 928
+        revision_id: 4
+        datasource: InfluxDB
+    influxdb_data_dir: /mnt/storage/influxdb/data
+    influxdb_meta_dir: /mnt/storage/influxdb/meta
 
   handlers:
     - name: restart telegraf
@@ -16,36 +29,16 @@
   pre_tasks:
     - name: Include Common
       include_tasks: common.yml
-
-    # - name: Import InfluxDB GPG signing key
-    #   apt_key: url=https://repos.influxdata.com/influxdb.key state=present
     
-    # - name: Add InfluxDB repository
-    #   apt_repository: repo='deb https://repos.influxdata.com/ubuntu trusty stable' state=present
-    
-    # - name: Install InfluxDB packages
-    #   apt: name=influxdb state=present
-    
-    # - name: Modify InfluxDB hostname
-    #   replace:
-    #     dest:    /etc/influxdb/influxdb.conf
-    #     regexp:  'hostname = "localhost"'
-    #     replace: 'hostname = "{{ ansible_hostname }}"'
-    #     backup:  yes
-    
-    # - name: Start the InfluxDB service
-    #   service: name=influxdb state=restarted
-
-    # - name: Wait for influxdb to come up
-    #   wait_for:
-    #     port:  8086
-    #     delay: 1
-
+    - name: Install required system packages
+      apt: name={{ item }} state=latest update_cache=yes
+      loop:
+        - gpg
 
     - name: Download Telegraf apt key
       apt_key:
-        url: "https://repos.influxdata.com/influxdb.key"
-        id: 2582E0C5
+        url: https://repos.influxdata.com/influxdb.key
+        id:  2582E0C5
         state: present
 
     - name: Add Telegraf repository
@@ -53,6 +46,12 @@
         repo: "deb https://repos.influxdata.com/{{ ansible_distribution|lower }} {{ ansible_lsb.codename }} stable"
         filename: telegraf
         state: present
+        
+    - name: Install Telegraf
+      apt:
+        name: telegraf
+        update_cache: yes
+      notify: restart telegraf
 
     - name: Set Telegraf config
       copy:
@@ -60,12 +59,6 @@
         dest: /etc/telegraf/telegraf.conf
       notify: restart telegraf
     
-    - name: Install Telegraf
-      apt:
-        name: telegraf
-        update_cache: yes
-      notify: restart telegraf
-
   roles:
     - role: heytrav.influxdb
     - role: cloudalchemy.grafana
@@ -77,7 +70,7 @@
         - python3
         - python3-pip
 
-    - name: Install requests module
+    - name: Install pip dependencies
       pip: name={{ item }}
       loop:
         - requests

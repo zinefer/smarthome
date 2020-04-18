@@ -83,8 +83,14 @@ module "metrics_container" {
     proxmox = proxmox
   }
 
-  name   = "metrics"
-  ip     = "192.168.47.7"
+  name     = "metrics"
+  ip       = "192.168.47.7"
+  memory   = 512
+  disksize = 4
+  mounts = [ 
+    {mp="/mnt/storage/grafana",  volume="/mnt/pve/cold/storage/grafana"},
+    {mp="/mnt/storage/influxdb", volume="/mnt/pve/cold/storage/influxdb"}
+  ]
 }
 
 module "home_vm" {

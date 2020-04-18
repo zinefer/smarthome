@@ -33,7 +33,6 @@
     - name: Install Flexget
       pip:
         name: flexget
-        #executable: pip3
     
     - name: Set crontab to execute Flexget every 5 minutes
       cron:
