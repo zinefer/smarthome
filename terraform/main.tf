@@ -135,6 +135,7 @@ module "torrents_container" {
 
   name     = "torrents"
   ip       = "192.168.47.30"
+  memory   = 512
   cores    = 2
   disksize = 3
   mounts = [

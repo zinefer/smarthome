@@ -171,4 +171,14 @@
         owner: nobody
         group: nogroup
 
-    - name: Enable
+    - name: Restart service nginx
+      service:
+        name:    nginx
+        state:   restarted
+
+    - name: Enable/start service php-fpm
+      service:
+        name:    php7.3-fpm
+        enabled: yes
+        state:   started
+        use:     upstart
