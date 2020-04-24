@@ -36,4 +36,12 @@
       INSTALL_WEB_INTERFACE=true
       LIGHTTPD_ENABLED=true
       BLOCKING_ENABLED=true
+  
+  tasks:
+    - name: Create dydns job
+      cron:
+        name: update dydns
+        minute: "*/5"
+        job: curl "https://dyn.dns.he.net/nic/update" -d "hostname={{ HOUSE_DOMAIN }}" -d "password={{ dydns_password }}"
+      
       
