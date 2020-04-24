@@ -35,7 +35,8 @@ function galaxy {
 function vault {
     file="ansible/group_vars/$1.yml"
     [ ! -f $file ] && file="ansible/host_vars/$1.yml"
-    [ -f $file ] && ansible-vault edit $file --vault-password-file ./pass.sh
+    [ -f $file ] && ansible-vault edit $file --vault-password-file ./pass.sh && exit
+    ansible-vault create $file --vault-password-file ./pass.sh
 }
 
 function clear-hosts {
