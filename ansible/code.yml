@@ -9,6 +9,10 @@
     - name: Include Common
       include_tasks: common.yml
 
+    - name: Set timezone
+      timezone:
+        name: "{{ TIMEZONE }}"
+
     - name: Ensure the locale exists
       locale_gen:
         name: en_US.UTF-8
