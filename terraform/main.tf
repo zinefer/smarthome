@@ -118,7 +118,8 @@ module "code_container" {
 
   name     = "code"
   ip       = "192.168.47.20"
-  disksize = 3
+  memory   = 1024
+  disksize = 4
   mounts = [ 
     {mp="/mnt/code",          volume="/mnt/pve/hot/code"},
     {mp="/mnt/config/hassio", volume="/mnt/pve/hot/config/hassio"},
