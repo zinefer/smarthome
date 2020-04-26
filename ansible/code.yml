@@ -59,7 +59,7 @@
       git_config:
         name: user.email
         scope: global
-        value: {{ GITHUB_USER_NAME }}
+        value: "{{ GITHUB_USER_EMAIL }}"
     
     - name: Setup github user name
       git_config:
