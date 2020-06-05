@@ -39,6 +39,7 @@
       
       - name: code
         path: /mnt/code
+        force_create_mode: '0777'
         directory_mode: '0777'
         create_mode:    '0777'
         valid_users: admin
@@ -62,6 +63,15 @@
         directory_mode:    '0777'
         create_mode:       '0777'
         valid_users: admin 
+        write_list:  admin
+        owner: nobody
+        group: nogroup
+      
+      - name: downloads
+        path: /mnt/downloads
+        directory_mode: '0777'
+        create_mode:    '0777'
+        valid_users: admin
         write_list:  admin
         owner: nobody
         group: nogroup

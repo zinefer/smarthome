@@ -70,6 +70,7 @@ module "files_container" {
     {mp="/mnt/skunkworks", volume="/mnt/pve/hot/skunkworks"}, 
     {mp="/mnt/config",     volume="/mnt/pve/hot/config"},
     {mp="/mnt/storage",    volume="/mnt/pve/cold/storage"},
+    {mp="/mnt/downloads",  volume="/mnt/pve/cold/public/downloads"},
     {mp="/mnt/torrents",   volume="/mnt/pve/cold/public/torrents"},
     {mp="/mnt/media",      volume="/mnt/pve/cold/public/media"},
   ]
@@ -159,6 +160,7 @@ module "plex_container" {
   ip       = "192.168.47.31"
   cores    = 3
   memory   = 2048
+  disksize = 3
   mounts = [
     {mp="/mnt/config/plex", volume="/mnt/pve/hot/config/plex"},
     {mp="/mnt/media", volume="/mnt/pve/cold/public/media"},

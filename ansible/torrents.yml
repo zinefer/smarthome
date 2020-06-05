@@ -16,8 +16,15 @@
         path:  /mnt/config/rtorrent/session
         user:  nobody
         group: nogroup
-    rtorrent_encryption: require,require_RC4,allow_incoming,try_outgoing
+    rtorrent_encryption: allow_incoming,prefer_plaintext,enable_retry
+    rtorrent_port_range: 51337-51337
+    rtorrent_port_random: "no"
     rtorrent_scgi_port: 5000
+    rtorrent_min_peers: 100
+    rtorrent_max_peers: 1024
+    rtorrent_min_peers_seed: 100
+    rtorrent_max_peers_seed: 1024
+    rtorrent_max_uploads: 300
 
   handlers:
     - name: restart php
