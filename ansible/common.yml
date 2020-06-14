@@ -1,6 +1,9 @@
 ---
 - name: Wait 600 seconds for target connection to become reachable/usable
   wait_for_connection:
+- name: Wait for sudo
+  become: yes
+  shell:  while sudo fuser /var/lib/dpkg/lock >/dev/null 2>&1; do sleep 5; done;
 - name: Gather facts
   setup:
 
