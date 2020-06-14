@@ -66,6 +66,7 @@ module "files_container" {
   ip     = "192.168.47.6"
   mounts = [ 
     {mp="/mnt/private",    volume="/mnt/pve/cold/private"},
+    {mp="/mnt/users",      volume="/mnt/pve/cold/users"},
     {mp="/mnt/code",       volume="/mnt/pve/hot/code"},
     {mp="/mnt/skunkworks", volume="/mnt/pve/hot/skunkworks"}, 
     {mp="/mnt/config",     volume="/mnt/pve/hot/config"},

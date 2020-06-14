@@ -14,10 +14,43 @@
         name:   hassio
         groups: users
         append: yes
-  
+
+    - name: Create users for samba
+      user:
+        name:   "{{ item.name }}"
+        groups: users
+        append: yes
+      loop: "{{ USERS }}"
+      loop_control:
+        label: "{{ item.name }}"
+      when: "item.password is defined"
+    - name: Set samba_users vars
+      set_fact:
+        samba_users: "{{ samba_users + [ {'name': item.name, 'password': item.password } ] }}"
+      loop: "{{ USERS }}"
+      loop_control:
+        label: "{{ item.name }}"
+      when: "item.password is defined"
+    - name: Create user share directory
+      file:
+        path: "/mnt/users/{{ item.name }}"
+        state: directory
+        mode: '0777'
+      loop: "{{ USERS }}"
+      loop_control:
+        label: "{{ item.name }}"
+      when: "item.password is defined"
+    - name: Set samba_shares vars
+      set_fact:
+        samba_shares: "{{ samba_shares + [ {'name': item.name, 'path': '/mnt/users/' + item.name, 'directory_mode': '0777', 'create_mode': '0777', 'valid_users': item.name + ' admin', 'write_list': item.name + ' admin', 'owner': 'nobody', 'group': 'nogroup'} ] }}"
+      loop: "{{ USERS }}"
+      loop_control:
+        label: "{{ item.name }}"
+      when: "item.password is defined"
+
   roles:
   - role: bertvv.samba
-  
+
   vars:
     samba_workgroup: WORKGROUP
     samba_map_to_guest: bad user

@@ -13,6 +13,14 @@
         name:       net.ipv4.ip_forward
         value:      '1'
         sysctl_set: yes
+
+    - name: Set wireguard_unmanaged_hosts
+      set_fact:
+        wireguard_unmanaged_hosts: "{{ wireguard_unmanaged_hosts + [ { 'host': item.name, 'allowed_ips': '10.13.37.' + ( (index | int) + 2 ) | string + '/32' } ] }}"
+      loop: "{{ USERS }}"
+      loop_control:
+        label: "{{ item.name }}"
+        index_var: index
   
   roles:
     - ansible-role-wireguard
