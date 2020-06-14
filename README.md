@@ -22,6 +22,11 @@
 
 My Proxmox host is installed onto a small ssd drive. This leaves only ~150g of space in local-lvm. I have used the raid card to take ~100g from hot storage and use it for virtual disks.
 
+### DNS
+
+https://dns.he.net/docs.html
+curl "https://dyn.dns.he.net/nic/update" -d "hostname=dyn.example.com" -d "password=password"
+
 ## Plex and friends
 
 Settings to minimize transcoding:
