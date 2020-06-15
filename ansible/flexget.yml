@@ -33,10 +33,22 @@
     - name: Install Flexget
       pip:
         name: flexget
+
+    - name: Create log directory if it does not exist
+      file:
+        path: /var/log/flexget
+        state: directory
+        mode: '0755'
+        owner: flexget
+        group: flexget
     
     - name: Set crontab to execute Flexget every 5 minutes
       cron:
-        name:   Execute Flexget
-        user:   flexget
-        job:    /usr/local/bin/flexget -c /mnt/config/flexget/config.yml execute
+        name: Execute Flexget
+        user: flexget
+        job: >-
+          /usr/local/bin/flexget --cron
+          -l /var/log/flexget/flexget.log
+          -c /mnt/config/flexget/config.yml
+          execute
         minute: "*/5"
