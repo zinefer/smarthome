@@ -35,6 +35,8 @@
       file:
         path: "/mnt/users/{{ item.name }}"
         state: directory
+        owner: nobody
+        group: nogroup
         mode: '0777'
       loop: "{{ USERS }}"
       loop_control:
