@@ -95,6 +95,25 @@ module "metrics_container" {
   ]
 }
 
+module "backups_container" {
+  source = "./modules/container"
+  ssh_public_keys = var.proxmox_pub_keys
+
+  providers = {
+    proxmox = proxmox
+  }
+
+  name     = "backups"
+  ip       = "192.168.47.8"
+  mounts = [ 
+    {mp="/mnt/code",       volume="/mnt/pve/hot/code"},
+    {mp="/mnt/config",     volume="/mnt/pve/hot/config"},   
+    {mp="/mnt/skunkworks", volume="/mnt/pve/hot/skunkworks"},
+    {mp="/mnt/users",      volume="/mnt/pve/cold/users"},
+    {mp="/mnt/private",    volume="/mnt/pve/cold/private"}
+  ]
+}
+
 module "home_vm" {
   source = "./modules/vm"
   ssh_public_keys = var.proxmox_pub_keys

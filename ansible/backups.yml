@@ -1,0 +1,85 @@
+--- 
+- hosts: backups
+  gather_facts: no
+  pre_tasks:
+    - name: Include Common
+      include_tasks: common.yml
+
+    - name: Set timezone
+      timezone:
+        name: "{{ TIMEZONE }}"
+  
+  roles:
+  - role: stefangweichinger.ansible_rclone
+
+  vars:
+    rclone_config_location: /home/rclone/.config/rclone/rclone.conf
+    rclone_configs:
+      - name: b2
+        properties:
+          type: b2
+          account: "{{ BACKBLAZE_ACCOUNT }}"
+          key: "{{ BACKBLAZE_KEY }}"
+      - name: pintail
+        properties:
+          type: crypt
+          remote: b2:pintail
+          password: "{{ BACKBLAZE_PASSWORD }}"
+          password2: "{{ BACKBLAZE_PASSWORD2 }}"
+    
+  tasks:
+    - name: Create group
+      group:
+        name:   rclone
+        state:  present
+        system: true
+
+    - name: Create user
+      user:
+        name:  rclone
+        group: rclone
+        createhome: true
+    
+    - name: Create log directory if it does not exist
+      file:
+        state: directory
+        path: /var/log/rclone
+        mode: '0777'
+        owner: rclone
+        group: rclone
+
+    - name: Create log directory if it does not exist
+      file:
+        state: touch
+        path: /var/log/rclone/rclone.log
+        mode: '0644'
+        owner: rclone
+        group: rclone
+    
+    - name: Set crontab to execute rclone every day starting at 0400
+      cron:
+        name: Backup {{ item }} at 04{{ '%02d'|format((index | int) * 10) }}
+        user: rclone
+        job: >-
+          /usr/local/bin/rclone
+          --log-file /var/log/rclone/rclone.log
+          --log-level INFO
+          sync /mnt/{{ item }} pintail:{{ item }}
+        minute: "{{ (index | int) * 10 }}"
+        hour: 4
+      loop:
+        - code
+        - config
+        - skunkworks
+        - users
+        - private
+      loop_control:
+        index_var: index
+    
+    - name: Set properties on config file
+      file:
+        state: directory
+        path: /home/rclone
+        recurse: yes
+        owner: rclone
+        group: rclone
