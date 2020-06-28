@@ -178,8 +178,8 @@ module "plex_container" {
 
   name     = "plex"
   ip       = "192.168.47.31"
-  cores    = 3
-  memory   = 2048
+  cores    = 10
+  memory   = 3072
   disksize = 3
   mounts = [
     {mp="/mnt/config/plex", volume="/mnt/pve/hot/config/plex"},
@@ -234,6 +234,7 @@ module "jackett_container" {
   name     = "jackett"
   ip       = "192.168.47.34"
   memory   = 512
+  disksize = 3
   mounts = [
     {mp="/mnt/config/jackett", volume="/mnt/pve/hot/config/jackett"},
     {mp="/mnt/downloads",      volume="/mnt/pve/cold/public/downloads"},
