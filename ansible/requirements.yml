@@ -7,6 +7,7 @@
 - src: bertvv.samba
 - src: heytrav.influxdb
 - src: cloudalchemy.grafana
+- src: dj-wasabi.telegraf
 - src: stefangweichinger.ansible_rclone
 
 - src: pallxk.code_server

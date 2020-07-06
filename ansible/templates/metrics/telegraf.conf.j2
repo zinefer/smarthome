@@ -490,10 +490,10 @@
 #   # %d - day of month (e.g., 01)
 #   # %H - hour (00..23)
 #   # %V - week of the year (ISO week) (01..53)
-#   ## Additionally, you can specify a tag name using the notation {{tag_name}}
+#   ## Additionally, you can specify a tag name using the notation {{ "{{tag_name}}" }}
 #   ## which will be used as part of the index name. If the tag does not exist,
 #   ## the default tag value will be used.
-#   # index_name = "telegraf-{{host}}-%Y.%m.%d"
+#   # index_name = "telegraf-{{ "{{host}}" }}-%Y.%m.%d"
 #   # default_tag_value = "none"
 #   index_name = "telegraf-%Y.%m.%d" # required.
 #
@@ -1637,7 +1637,7 @@
 #   ## Go template used to create the tag value.  In order to ease TOML
 #   ## escaping requirements, you may wish to use single quotes around the
 #   ## template string.
-#   template = '{{ .Tag "hostname" }}.{{ .Tag "level" }}'
+#   template = '{{ "{{ .Tag \"hostname\" }}.{{ .Tag \"level\" }}" }}'
 
 
 # # Print all metrics that pass through this filter.
@@ -5775,57 +5775,63 @@
 
 
 # # Stream and parse log file(s).
-# [[inputs.logparser]]
-#   ## Log files to parse.
-#   ## These accept standard unix glob matching rules, but with the addition of
-#   ## ** as a "super asterisk". ie:
-#   ##   /var/log/**.log     -> recursively find all .log files in /var/log
-#   ##   /var/log/*/*.log    -> find all .log files with a parent dir in /var/log
-#   ##   /var/log/apache.log -> only tail the apache log file
-#   files = ["/var/log/apache/access.log"]
-#
-#   ## Read files that currently exist from the beginning. Files that are created
-#   ## while telegraf is running (and that match the "files" globs) will always
-#   ## be read from the beginning.
-#   from_beginning = false
-#
-#   ## Method used to watch for file updates.  Can be either "inotify" or "poll".
-#   # watch_method = "inotify"
-#
-#   ## Parse logstash-style "grok" patterns:
-#   [inputs.logparser.grok]
-#     ## This is a list of patterns to check the given log file(s) for.
-#     ## Note that adding patterns here increases processing time. The most
-#     ## efficient configuration is to have one pattern per logparser.
-#     ## Other common built-in patterns are:
-#     ##   %{COMMON_LOG_FORMAT}   (plain apache & nginx access logs)
-#     ##   %{COMBINED_LOG_FORMAT} (access logs + referrer & agent)
-#     patterns = ["%{COMBINED_LOG_FORMAT}"]
-#
-#     ## Name of the outputted measurement name.
-#     measurement = "apache_access_log"
-#
-#     ## Full path(s) to custom pattern files.
-#     custom_pattern_files = []
-#
-#     ## Custom patterns can also be defined here. Put one pattern per line.
-#     custom_patterns = '''
-#     '''
-#
-#     ## Timezone allows you to provide an override for timestamps that
-#     ## don't already include an offset
-#     ## e.g. 04/06/2016 12:41:45 data one two 5.43µs
-#     ##
-#     ## Default: "" which renders UTC
-#     ## Options are as follows:
-#     ##   1. Local             -- interpret based on machine localtime
-#     ##   2. "Canada/Eastern"  -- Unix TZ values like those found in https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
-#     ##   3. UTC               -- or blank/unspecified, will return timestamp in UTC
-#     # timezone = "Canada/Eastern"
-#
-# 	## When set to "disable", timestamp will not incremented if there is a
-# 	## duplicate.
-#     # unique_timestamp = "auto"
+#[[inputs.logparser]]
+  ## Log files to parse.
+  ## These accept standard unix glob matching rules, but with the addition of
+  ## ** as a "super asterisk". ie:
+  ##   /var/log/**.log     -> recursively find all .log files in /var/log
+  ##   /var/log/*/*.log    -> find all .log files with a parent dir in /var/log
+  ##   /var/log/apache.log -> only tail the apache log file
+  #files = [
+  #  "/var/log/rclone/rclone.log"
+  #]
+
+  ## Read files that currently exist from the beginning. Files that are created
+  ## while telegraf is running (and that match the "files" globs) will always
+  ## be read from the beginning.
+  #from_beginning = false
+
+  ## Method used to watch for file updates.  Can be either "inotify" or "poll".
+  #watch_method = "inotify"
+
+  ## Parse logstash-style "grok" patterns:
+  #[inputs.logparser.grok]
+    ## This is a list of patterns to check the given log file(s) for.
+    ## Note that adding patterns here increases processing time. The most
+    ## efficient configuration is to have one pattern per logparser.
+    ## Other common built-in patterns are:
+    ##   %{COMMON_LOG_FORMAT}   (plain apache & nginx access logs)
+    ##   %{COMBINED_LOG_FORMAT} (access logs + referrer & agent)
+    #patterns = [
+    #  "%{DATESTAMP} %{LOGLEVEL}%{SPACE}:%{SPACE}%{INT:UPLOADED} / %{INT:TOTAL} Bytes, -, %{INT:BYTES_SEC}",
+    #  "%{DATESTAMP} %{LOGLEVEL}%{SPACE}: %{GREEDYDATA}",
+    #  "%{DATESTAMP} %{GREEDYDATA}"
+    #]
+
+    ## Name of the outputted measurement name.
+    #measurement = "apache_access_log"
+
+    ## Full path(s) to custom pattern files.
+    #custom_pattern_files = []
+
+    ## Custom patterns can also be defined here. Put one pattern per line.
+    #custom_patterns = '''
+    #'''
+
+    # Timezone allows you to provide an override for timestamps that
+    # don't already include an offset
+    # e.g. 04/06/2016 12:41:45 data one two 5.43µs
+    #
+    # Default: "" which renders UTC
+    # Options are as follows:
+    #   1. Local             -- interpret based on machine localtime
+    #   2. "Canada/Eastern"  -- Unix TZ values like those found in https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
+    #   3. UTC               -- or blank/unspecified, will return timestamp in UTC
+    #timezone = "UTC"
+
+	## When set to "disable", timestamp will not incremented if there is a
+	## duplicate.
+    # unique_timestamp = "auto"
 
 
 # # Read metrics from MQTT topic(s)
@@ -6611,3 +6617,8 @@
 # [[inputs.zipkin]]
 #   # path = "/api/v1/spans" # URL path for span data
 #   # port = 9411            # Port on which Telegraf listens
+
+
+# include '/metrics/' + hostname + '.conf.j2' ignore missing
+
+{% include '/templates/metrics/' + hostname + '.conf.j2' ignore missing %}

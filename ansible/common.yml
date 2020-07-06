@@ -29,16 +29,12 @@
   apt:
     name: telegraf
     update_cache: yes
-  #notify: restart telegraf
+  notify: restart telegraf
 
 - name: Set Telegraf config
-  copy:
-    src:  templates/metrics/telegraf.conf
+  template:
+    src:  templates/metrics/telegraf.conf.j2
     dest: /etc/telegraf/telegraf.conf
-  #notify: restart telegraf
-
-- name: restart telegraf
-  service:
-    name: telegraf
-    state: restarted
-    enabled: yes
+  vars:
+    hostname: "{{ inventory_hostname | regex_replace('.pintail') }}"
+  notify: restart telegraf

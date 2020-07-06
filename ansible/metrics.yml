@@ -20,11 +20,7 @@
     influxdb_meta_dir: /mnt/storage/influxdb/meta
 
   handlers:
-    - name: restart telegraf
-      service:
-        name: telegraf
-        state: restarted
-        enabled: yes
+    - import_tasks: handlers/global.yml
   
   pre_tasks:
     - name: Include Common
@@ -84,6 +80,16 @@
     - name: Create telegraf database
       influxdb_database:
         database_name: telegraf
+        use_udp: no
+        udp_port: 0
+        port: 8086
+
+    - name: create 60 day retention policy
+      influxdb_retention_policy:
+        database_name: telegraf
+        policy_name: autogen
+        duration: 60d
+        replication: 1
         use_udp: no
         udp_port: 0
         port: 8086
