@@ -64,6 +64,7 @@ module "files_container" {
 
   name   = "files"
   ip     = "192.168.47.6"
+  cores  = 2
   mounts = [ 
     {mp="/mnt/private",    volume="/mnt/pve/cold/private"},
     {mp="/mnt/users",      volume="/mnt/pve/cold/users"},
