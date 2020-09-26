@@ -106,6 +106,7 @@ module "backups_container" {
 
   name     = "backups"
   ip       = "192.168.47.8"
+  memory   = 1024
   mounts = [ 
     {mp="/mnt/code",       volume="/mnt/pve/hot/code"},
     {mp="/mnt/config",     volume="/mnt/pve/hot/config"},   

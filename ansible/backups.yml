@@ -64,6 +64,7 @@
           /usr/local/bin/rclone
           --log-file /var/log/rclone/rclone.log
           --log-level INFO
+          --fast-list
           sync /mnt/{{ item }} pintail:{{ item }}
         minute: "{{ (index | int) * 10 }}"
         hour: 4
