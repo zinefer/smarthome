@@ -1,7 +1,7 @@
 ---
 - name: Wait 600 seconds for target connection to become reachable/usable
   wait_for_connection:
-- name: Wait for /tmp/test_file to be empty - this test should fail but it passes
+- name: Wait for /var/lib/dpkg/lock to be empty
   wait_for:
     path: /var/lib/dpkg/lock
     search_regex: '\A\Z'
@@ -34,6 +34,7 @@
     repo: "deb https://repos.influxdata.com/{{ ansible_distribution|lower }} {{ ansible_lsb.codename }} stable"
     filename: telegraf
     state: present
+    #update_cache: no
     
 - name: Install Telegraf
   apt:
