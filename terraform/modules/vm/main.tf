@@ -32,11 +32,25 @@ variable "cores" {
   default = "1"
 }
 
+variable "provisioner" {
+  type    = string
+  default = ""
+}
+
 locals {
   vmid = (var.vmid == 0 ? format("1%04s", element(split(".", var.ip), 3)) : var.vmid)
 }
 
 # Providers
+
+terraform {
+  required_providers {
+    proxmox = {
+      source = "ondrejsika/proxmox"
+      version = "2020.9.21"
+    }
+  }
+}
 
 provider "proxmox" { }
 
@@ -59,6 +73,10 @@ resource "proxmox_vm_qemu" "vm" {
 
   ipconfig0 = "ip=${var.ip}/24,gw=192.168.47.1"
   sshkeys   = var.ssh_public_keys
+
+  provisioner "local-exec" {
+    command = var.provisioner
+  }
 
   lifecycle {
     ignore_changes = [

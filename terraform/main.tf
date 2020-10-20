@@ -19,6 +19,15 @@ variable "proxmox_pub_keys" {
 
 # Providers
 
+terraform {
+  required_providers {
+    proxmox = {
+      source = "ondrejsika/proxmox"
+      version = "2020.9.21"
+    }
+  }
+}
+
 provider "proxmox" {
     pm_tls_insecure = true
     pm_api_url  = "https://${var.proxmox_host}:8006/api2/json"
@@ -129,6 +138,8 @@ module "home_vm" {
   memory   = 4096
   cores    = 4
   disksize = 10
+
+  provisioner = "ssh root@proxmox.pintail 'qm set 10010 -usb0 host=10c4:8a2a'"
 }
 
 module "code_container" {

@@ -1,17 +1,27 @@
 ---
 - name: Wait 600 seconds for target connection to become reachable/usable
   wait_for_connection:
-- name: Wait for sudo
-  become: yes
-  shell:  while sudo fuser /var/lib/dpkg/lock >/dev/null 2>&1; do sleep 5; done;
+- name: Wait for /tmp/test_file to be empty - this test should fail but it passes
+  wait_for:
+    path: /var/lib/dpkg/lock
+    search_regex: '\A\Z'
+
 - name: Gather facts
   setup:
 
 # Metrics
-- name: Install required system packages
+- name: Install required system packages for ubuntu
   apt: name={{ item }} state=latest update_cache=yes
   loop:
     - gpg
+  when: ansible_distribution == 'Ubuntu'
+
+- name: Install required system packages for debian
+  apt: name={{ item }} state=latest update_cache=yes
+  loop:
+    - gnupg
+    - apt-transport-https
+  when: ansible_distribution == 'Debian'
 
 - name: Download Telegraf apt key
   apt_key:

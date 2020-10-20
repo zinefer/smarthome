@@ -2,8 +2,22 @@
 - hosts: home
   gather_facts: no
   pre_tasks:
+    - name: Wait 600 seconds for target connection to become reachable/usable
+      wait_for_connection:
+    - name: Search for USB Hub
+      shell: cat /sys/bus/usb/devices/*/product | grep -e HubZ
+      register: usb_hub
+      failed_when: usb_hub.rc == 2
+    - name: Reboot for USB Hub
+      local_action: 
+        module: shell
+        _raw_params: ssh root@proxmox.pintail 'qm reboot 10010'
+
     - name: Include Common
       include_tasks: common.yml
+
+  handlers:
+    - import_tasks: handlers/global.yml
   
   roles:
     - geerlingguy.docker
