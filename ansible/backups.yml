@@ -1,6 +1,10 @@
 --- 
 - hosts: backups
   gather_facts: no
+
+  handlers:
+    - import_tasks: handlers/global.yml
+
   pre_tasks:
     - name: Include Common
       include_tasks: common.yml
@@ -58,22 +62,42 @@
     
     - name: Set crontab to execute rclone every day starting at 0400
       cron:
-        name: Backup {{ item }} at 04{{ '%02d'|format((index | int) * 10) }}
+        name: Backup {{ item.folder }} at 04{{ '%02d'|format((index | int) * 10) }}
         user: rclone
         job: >-
           /usr/local/bin/rclone
           --log-file /var/log/rclone/rclone.log
           --log-level INFO
           --fast-list
-          sync /mnt/{{ item }} pintail:{{ item }}
+          --delete-excluded
+          {% for i in item.ignore %}--exclude "{{ i }}" {% endfor %}
+          sync /mnt/{{ item.folder }} pintail:{{ item.folder }}
         minute: "{{ (index | int) * 10 }}"
         hour: 4
       loop:
-        - code
-        - config
-        - skunkworks
-        - users
-        - private
+        - folder: code
+          ignore:
+            - node_modules/**
+        - folder: config
+          ignore:
+            - '*.log'
+            - /radarr/logs/**
+            - /radarr/UpdateLogs/**
+            - /sonarr/logs/**
+            - /jackett/Jackett/log*
+            - /jackett/Jackett/updater*
+            - /flexget/received/*
+            - /plex/Crash Reports/**
+            - /plex/Cache/**
+            - /plex/Logs/**
+            - /hassio/homeassistant/home-assistant_v2.db
+            - /hassio/addons/**
+        - folder: skunkworks
+          ignore: []
+        - folder: users
+          ignore: []
+        - folder: private
+          ignore: []
       loop_control:
         index_var: index
     
