@@ -34,7 +34,7 @@
     repo: "deb https://repos.influxdata.com/{{ ansible_distribution|lower }} {{ ansible_lsb.codename }} stable"
     filename: telegraf
     state: present
-    #update_cache: no
+    update_cache: no
     
 - name: Install Telegraf
   apt:

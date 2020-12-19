@@ -16,6 +16,9 @@
       - dashboard_id: 928
         revision_id: 4
         datasource: InfluxDB
+      - dashboard_id: 12034
+        revision_id: 1
+        datasource: InfluxDB
     influxdb_data_dir: /mnt/storage/influxdb/data
     influxdb_meta_dir: /mnt/storage/influxdb/meta
 
@@ -26,37 +29,8 @@
     - name: Include Common
       include_tasks: common.yml
     
-    - name: Install required system packages
-      apt: name={{ item }} state=latest update_cache=yes
-      loop:
-        - gpg
-
-    - name: Download Telegraf apt key
-      apt_key:
-        url: https://repos.influxdata.com/influxdb.key
-        id:  2582E0C5
-        state: present
-
-    - name: Add Telegraf repository
-      apt_repository:
-        repo: "deb https://repos.influxdata.com/{{ ansible_distribution|lower }} {{ ansible_lsb.codename }} stable"
-        filename: telegraf
-        state: present
-        
-    - name: Install Telegraf
-      apt:
-        name: telegraf
-        update_cache: yes
-      notify: restart telegraf
-
-    - name: Set Telegraf config
-      copy:
-        src:  templates/metrics/telegraf.conf
-        dest: /etc/telegraf/telegraf.conf
-      notify: restart telegraf
-    
   roles:
-    - role: heytrav.influxdb
+    - role: ansible-influxdb
     - role: cloudalchemy.grafana
 
   tasks:

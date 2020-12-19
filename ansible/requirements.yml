@@ -5,7 +5,9 @@
 
 - src: drew-kun.pihole
 - src: bertvv.samba
-- src: heytrav.influxdb
+#- src: heytrav.influxdb
+- src: https://github.com/zinefer/ansible-influxdb.git
+  version: ubuntu-20.04
 - src: cloudalchemy.grafana
 - src: dj-wasabi.telegraf
 - src: stefangweichinger.ansible_rclone
