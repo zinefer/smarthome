@@ -1,0 +1,9 @@
+---
+- name: prevent the iptables-peristent install dialog
+  debconf: name=iptables-persistent question={{ item }} vtype=boolean value=true
+  with_items:
+  - iptables-persistent/autosave_v4
+  - iptables-persistent/autosave_v6
+
+- name: install iptables-persistent
+  apt: name=iptables-persistent

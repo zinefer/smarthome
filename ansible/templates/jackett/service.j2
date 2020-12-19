@@ -3,18 +3,15 @@ Description=Jackett Daemon
 After=network.target
 
 [Service]
-Environment=MONO_THREADS_PER_CPU="250"
-Environment=MONO_GC_PARAMS="nursery-size=256m"
 Environment=XDG_CONFIG_HOME=/mnt/config/jackett
-MemoryMax=512M
-WorkingDirectory=/opt/Jackett
-User=jackett
-ExecStart=/usr/bin/mono --optimize=all JackettConsole.exe --NoRestart
-Restart=always
-RestartSec=2
-Type=simple
-TimeoutStopSec=5
 SyslogIdentifier=jackett
+Restart=always
+RestartSec=5
+Type=simple
+User=jackett
+WorkingDirectory=/opt/Jackett
+ExecStart=/bin/sh "/opt/Jackett/jackett_launcher.sh"
+TimeoutStopSec=30
 
 [Install]
 WantedBy=multi-user.target

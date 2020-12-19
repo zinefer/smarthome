@@ -3,7 +3,8 @@
   gather_facts: no
 
   handlers:
-    - name:    reload systemctl
+    - import_tasks: handlers/global.yml
+    - name: reload systemctl
       command: systemctl daemon-reload
     - name: restart jackett
       service:
@@ -13,15 +14,10 @@
   pre_tasks:
     - name: Include Common
       include_tasks: common.yml
-    - name: Install mono-dev
-      include_tasks: tasks/install-mono.yml
+    - name: Install iptables-persistent
+      include_tasks: tasks/install-iptables-persistent.yml
       
   tasks:
-    - name: Install required system packages
-      apt: name={{ item }} state=latest update_cache=yes
-      loop:
-        - netfilter-persistent
-
     - name: Create group
       group:
         name:   jackett
@@ -48,7 +44,11 @@
       register: all_releases
 
     - set_fact: 
-        latest_release: "{{ all_releases.json[0].assets | to_json | from_json | json_query('[?contains(name, `.Mono.tar.gz`)] | [0]') }}"
+        latest_release: |
+          {{ 
+              all_releases.json[0].assets | to_json | from_json | 
+              json_query('[?contains(name, `.LinuxAMDx64.tar.gz`)] | [0]') 
+          }}
 
     - debug:
         var: latest_release
@@ -57,12 +57,12 @@
     - name: Download {{ latest_release.name }}
       get_url:
         url:  "{{ latest_release.browser_download_url }}"
-        dest: /tmp/Jackett.mono.tar.gz
+        dest: /tmp/Jackett.LinuxAMDx64.tar.gz
       register: download
 
     - name: Unpack Jackett archive
       unarchive:
-        src:  /tmp/Jackett.mono.tar.gz
+        src:  /tmp/Jackett.LinuxAMDx64.tar.gz
         dest: /opt
         copy: false
       become: true
@@ -84,7 +84,7 @@
       register: iptables
     
     - name:  Save iptables
-      shell: service netfilter-persistent save
+      shell: iptables-save > /etc/iptables/rules.v4
       when:  iptables.changed
 
     - name: Deploy Jackett service manifest
