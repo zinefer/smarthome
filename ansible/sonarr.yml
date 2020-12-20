@@ -3,6 +3,7 @@
   gather_facts: no
   
   handlers:
+    - import_tasks: handlers/global.yml
     - name: Reload Sonarr service config
       command: systemctl daemon-reload
     - name: Restart Sonarr service
@@ -13,6 +14,8 @@
   pre_tasks:
     - name: Include Common
       include_tasks: common.yml
+    - name: Install iptables-persistent
+      include_tasks: tasks/install-iptables-persistent.yml
     - name: Install mono-dev
       include_tasks: tasks/install-mono.yml
 
@@ -22,7 +25,6 @@
       loop:
         - gpg
         - libmediainfo0v5
-        - netfilter-persistent
     
     - name: Create group
       group:
@@ -49,21 +51,10 @@
       apt:
         name: nzbdrone
 
-    - name: Forward port 80 to 8989
-      iptables:
-        table:    nat
-        chain:    PREROUTING
-        jump:     REDIRECT
-        protocol: tcp
-        match:    tcp
-        in_interface: eth0
-        destination_port: '80'
-        to_ports: '8989'
-      register: iptables
-    
-    - name:  Save iptables
-      shell: service netfilter-persistent save
-      when:  iptables.changed
+    - include_tasks: tasks/forward-port.yml
+      vars:
+        in_port:  '80'
+        out_port: '8989'
     
     - name: Deploy Sonarr service manifest
       template:

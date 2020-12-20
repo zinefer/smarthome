@@ -141,7 +141,7 @@ module "home_vm" {
   cores    = 4
   disksize = 10
 
-  provisioner = "ssh root@proxmox.pintail 'qm set 10010 -usb0 host=10c4:8a2a'"
+  provisioner = "ssh -oStrictHostKeyChecking=no root@proxmox.pintail 'qm set 10010 -usb0 host=10c4:8a2a'"
 }
 
 module "code_container" {
@@ -191,6 +191,8 @@ module "plex_container" {
     proxmox = proxmox
   }
 
+  os = "ubuntu-20.04-standard_20.04-1_amd64.tar.gz"
+
   name     = "plex"
   ip       = "192.168.47.31"
   cores    = 10
@@ -210,6 +212,8 @@ module "sonarr_container" {
     proxmox = proxmox
   }
 
+  os = "ubuntu-20.04-standard_20.04-1_amd64.tar.gz"
+
   name     = "sonarr"
   ip       = "192.168.47.32"
   memory   = 512
@@ -227,6 +231,8 @@ module "radarr_container" {
   providers = {
     proxmox = proxmox
   }
+
+  os = "ubuntu-20.04-standard_20.04-1_amd64.tar.gz"
 
   name     = "radarr"
   ip       = "192.168.47.33"

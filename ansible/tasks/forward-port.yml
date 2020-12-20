@@ -1,0 +1,16 @@
+---
+- name: Forward port {{ in_port }} to {{ out_port }}
+  iptables:
+    table:    nat
+    chain:    PREROUTING
+    jump:     REDIRECT
+    protocol: tcp
+    match:    tcp
+    in_interface: eth0
+    destination_port: '{{ in_port }}'
+    to_ports: '{{ out_port }}'
+  register: iptables
+
+- name:  Save iptables
+  shell: iptables-save > /etc/iptables/rules.v4
+  when:  iptables.changed

@@ -70,22 +70,11 @@
       when: download.changed
       notify:
         - restart jackett
-    
-    - name: Forward port 80 to 9117
-      iptables:
-        table:    nat
-        chain:    PREROUTING
-        jump:     REDIRECT
-        protocol: tcp
-        match:    tcp
-        in_interface: eth0
-        destination_port: '80'
-        to_ports: '9117'
-      register: iptables
-    
-    - name:  Save iptables
-      shell: iptables-save > /etc/iptables/rules.v4
-      when:  iptables.changed
+
+    - include_tasks: tasks/forward-port.yml
+      vars:
+        in_port:  '80'
+        out_port: '9117'
 
     - name: Deploy Jackett service manifest
       template:
