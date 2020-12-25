@@ -3,6 +3,7 @@
   gather_facts: no
 
   handlers:
+    - import_tasks: handlers/global.yml
     - name:    reload systemctl
       command: systemctl daemon-reload
     - name: restart radarr
@@ -13,17 +14,15 @@
   pre_tasks:
     - name: Include Common
       include_tasks: common.yml
-    - name: Install mono-dev
-      include_tasks: tasks/install-mono.yml
+    - name: Install iptables-persistent
+      include_tasks: tasks/install-iptables-persistent.yml
       
   tasks:
     - name: Install required system packages
       apt: name={{ item }} state=latest update_cache=yes
       loop:
-        - gpg
-        - libmediainfo0v5
-        - netfilter-persistent
-    
+        - libmediainfo-dev
+
     - name: Create group
       group:
         name:   radarr
@@ -50,7 +49,11 @@
       register: all_releases
 
     - set_fact: 
-        latest_release: "{{ all_releases.json[0].assets | to_json | from_json | json_query('[?contains(name, `.linux.tar.gz`)] | [0]') }}"
+        latest_release: |
+          {{ 
+            all_releases.json[0].assets | to_json | from_json | 
+            json_query('[?contains(name, `.linux-core-x64.tar.gz`)] | [0]')
+          }}
 
     - debug:
         var: latest_release
@@ -59,12 +62,12 @@
     - name: Download {{ latest_release.name }}
       get_url:
         url:  "{{ latest_release.browser_download_url }}"
-        dest: /tmp/Radarr.linux.tar.gz
+        dest: /tmp/Radarr.linux-core-x64.tar.gz
       register: download
 
     - name: Unpack Radarr archive
       unarchive:
-        src:  /tmp/Radarr.linux.tar.gz
+        src:  /tmp/Radarr.linux-core-x64.tar.gz
         dest: /opt
         copy: false
       become_user: radarr
@@ -72,23 +75,12 @@
       when: download.changed
       notify:
         - restart radarr
-    
-    - name: Forward port 80 to 7878
-      iptables:
-        table:    nat
-        chain:    PREROUTING
-        jump:     REDIRECT
-        protocol: tcp
-        match:    tcp
-        in_interface: eth0
-        destination_port: '80'
-        to_ports: '7878'
-      register: iptables
-    
-    - name: Save iptables
-      shell: service netfilter-persistent save
-      when: iptables.changed
 
+    - include_tasks: tasks/forward-port.yml
+      vars:
+        in_port:  '80'
+        out_port: '7878'
+    
     - name: Deploy Radarr service manifest
       template:
         src:   radarr/service.j2
