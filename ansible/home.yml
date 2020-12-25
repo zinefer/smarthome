@@ -1,9 +1,15 @@
 ---
 - hosts: home
   gather_facts: no
+  handlers:
+    - import_tasks: handlers/global.yml
+  roles:
+    - geerlingguy.docker
+
   pre_tasks:
-    - name: Wait 600 seconds for target connection to become reachable/usable
-      wait_for_connection:
+    - name: Include Common
+      include_tasks: common.yml
+
     - name: Search for USB Hub
       shell: cat /sys/bus/usb/devices/*/product | grep -e HubZ
       register: usb_hub
@@ -11,16 +17,14 @@
     - name: Reboot for USB Hub
       local_action: 
         module: shell
-        _raw_params: ssh root@proxmox.pintail 'qm reboot 10010'
-
-    - name: Include Common
-      include_tasks: common.yml
-
-  handlers:
-    - import_tasks: handlers/global.yml
-  
-  roles:
-    - geerlingguy.docker
+        _raw_params: |
+          ssh -oStrictHostKeyChecking=no root@proxmox.pintail 'qm reboot 10010'
+    
+    - name: Wait 600 seconds for target connection to become reachable/usable
+      wait_for_connection:
+    
+    - name: Install iptables-persistent
+      include_tasks: tasks/install-iptables-persistent.yml
   
   tasks:  
     - name: Install required system packages
@@ -38,7 +42,7 @@
         - network-manager
         - socat
         - cifs-utils
-        - netfilter-persistent
+        - expect
 
     - name: Place Samba credentials file
       copy:
@@ -62,22 +66,22 @@
         state:   stopped
         enabled: no
 
-    - name: Forward port 80 to 8123
-      iptables:
-        table:    nat
-        chain:    PREROUTING
-        jump:     REDIRECT
-        protocol: tcp
-        match:    tcp
-        in_interface: eth0
-        destination_port: '80'
-        to_ports: '8123'
-      register: iptables
+    - include_tasks: tasks/forward-port.yml
+      vars:
+        in_port:  '80'
+        out_port: '8123'
     
-    - name: Save iptables
-      shell: service netfilter-persistent save
-      when: iptables.changed
+    - name: Download installer.sh
+      get_url:
+        url: https://raw.githubusercontent.com/home-assistant/installer/master/installer.sh
+        dest: /home/debian/installer.sh
     
     - name: Install home assistant supervised
       shell: |
-        curl -sL "https://raw.githubusercontent.com/home-assistant/installer/master/installer.sh" | bash -s
+        set timeout 300
+        spawn /bin/bash installer.sh
+        expect "*N/y"
+        send "y\n"
+        expect eof
+      args:
+        executable: /usr/bin/expect
