@@ -1,6 +1,8 @@
 ---
 - hosts: vpn
   gather_facts: no
+  handlers: 
+    - import_tasks: handlers/global.yml
   pre_tasks:
     - name: Include Common
       include_tasks: common.yml

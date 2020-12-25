@@ -1,6 +1,10 @@
 ---
 - hosts: code
   gather_facts: no
+
+  handlers:
+    - import_tasks: handlers/global.yml
+
   vars:
     code_server_auth: password
     code_server_host: 0.0.0.0

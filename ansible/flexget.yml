@@ -3,6 +3,7 @@
   gather_facts: no
 
   handlers:
+    - import_tasks: handlers/global.yml
     - name:    reload systemctl
       command: systemctl daemon-reload
 
