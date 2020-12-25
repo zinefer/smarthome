@@ -273,6 +273,8 @@ module "flexget_container" {
     proxmox = proxmox
   }
 
+  os = "ubuntu-20.04-standard_20.04-1_amd64.tar.gz"
+
   name     = "flexget"
   ip       = "192.168.47.35"
   mounts = [
