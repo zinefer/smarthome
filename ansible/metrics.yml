@@ -30,7 +30,7 @@
       include_tasks: common.yml
     
   roles:
-    - role: ansible-influxdb
+    - role: heytrav.influxdb
     - role: cloudalchemy.grafana
 
   tasks:
