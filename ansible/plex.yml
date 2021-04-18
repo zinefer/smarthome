@@ -3,6 +3,7 @@
   gather_facts: no
   
   handlers:
+    - import_tasks: handlers/global.yml
     - name: restart plex
       service:
         name:  plexmediaserver
@@ -53,7 +54,7 @@
       register: iptables
     
     - name:  Save iptables
-      shell: service netfilter-persistent save
+      shell: iptables-save
       when:  iptables.changed
 
     - name: Add Plex apt key (Ubuntu & Debian with systemd)

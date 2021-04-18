@@ -2,19 +2,18 @@
 - name: Wait 600 seconds for target connection to become reachable/usable
   wait_for_connection:
 
-- name: Wait for any automatic services to kick off
-  wait_for:
-    timeout: 10
+# - name: Wait for any possibly running unattended upgrade to finish
+#   raw: systemd-run --property="After=apt-daily.service apt-daily-upgrade.service" --wait /bin/true
 
 - name: APT LISTS - wait for the lock to be released
-  raw: 'sudo lslocks -uo path | grep -E "^(PATH|/var/lib/apt/lists/lock)$"'
+  raw: 'lslocks -uo path | grep -E "^(PATH|/var/lib/apt/lists/lock)$"'
   register: result
   until: result.stdout|trim == "PATH"
   retries: 100
   delay: 5
 
 - name: DPKG - wait for the lock to be released
-  raw: 'sudo lslocks -uo path | grep -E "^(PATH|/var/lib/dpkg/lock|/var/lib/dpkg/lock-frontend)$"'
+  raw: 'lslocks -uo path | grep -E "^(PATH|/var/lib/dpkg/lock|/var/lib/dpkg/lock-frontend)$"'
   register: result
   until: result.stdout|trim == "PATH"
   retries: 300

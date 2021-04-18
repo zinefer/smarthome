@@ -71,6 +71,8 @@ module "files_container" {
     proxmox = proxmox
   }
 
+  os = "ubuntu-20.04-standard_20.04-1_amd64.tar.gz"
+
   name   = "files"
   ip     = "192.168.47.6"
   cores  = 2
