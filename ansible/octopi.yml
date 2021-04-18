@@ -1,0 +1,20 @@
+---
+- hosts: octopi
+  gather_facts: no
+  handlers: 
+    - import_tasks: handlers/global.yml
+  pre_tasks:
+    - name: Include Common
+      include_tasks: common.yml
+    
+    - name: Add telegraf user to video for gpu temp polling
+      user:
+        name: telegraf
+        groups: video
+        append: yes
+      notify: restart telegraf
+  
+  #tasks:
+    
+    
+      

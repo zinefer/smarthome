@@ -1,4 +1,3 @@
----
 # Infra
 - import_playbook: vpn.yml
 - import_playbook: pihole.yml
@@ -10,6 +9,7 @@
 
 # My stuff
 - import_playbook: code.yml
+- import_playbook: octopi.yml
 
 # Media
 - import_playbook: torrents.yml

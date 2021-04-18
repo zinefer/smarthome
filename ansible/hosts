@@ -16,6 +16,8 @@ home.pintail       ansible_host=192.168.47.10 ansible_user=debian ansible_become
 
 [code]
 code.pintail       ansible_host=192.168.47.20
+[octopi]
+octopi.pintail     ansible_host=192.168.47.21 ansible_user=pi ansible_password=raspberry ansible_sudo_pass=raspberry ansible_become=yes
 
 [torrents]
 torrents.pintail   ansible_host=192.168.47.30
