@@ -1,0 +1,17 @@
+[Unit]
+Description=AdGuard Home: Network-level blocker
+ConditionFileIsExecutable={{ adguard_path }}/AdGuardHome/AdGuardHome
+After=syslog.target network-online.target
+
+[Service]
+StartLimitInterval=5
+StartLimitBurst=10
+ExecStart={{ adguard_path }}/AdGuardHome/AdGuardHome "-s" "run"
+WorkingDirectory={{ adguard_path }}/AdGuardHome
+StandardOutput=file:/var/log/AdGuardHome.out
+StandardError=file:/var/log/AdGuardHome.err
+Restart=always
+RestartSec=10
+
+[Install]
+WantedBy=multi-user.target

@@ -50,17 +50,18 @@ module "vpn_vm" {
   ip   = "192.168.47.3"
 }
 
-module "pihole_container" {
+module "adguard_container" {
   source = "./modules/container"
   ssh_public_keys = var.proxmox_pub_keys
+
+  os = "ubuntu-20.04-standard_20.04-1_amd64.tar.gz"
 
   providers = {
     proxmox = proxmox
   }
   
-  name = "pihole"
+  name = "adguard"
   ip   = "192.168.47.5"
-  os   = "debian-9.0-standard_9.7-1_amd64.tar.gz"
 }
 
 module "files_container" {
@@ -156,7 +157,7 @@ module "code_container" {
 
   name     = "code"
   ip       = "192.168.47.20"
-  memory   = 1024
+  memory   = 2048
   disksize = 5
   mounts = [ 
     {mp="/mnt/code",          volume="/mnt/pve/hot/code"},

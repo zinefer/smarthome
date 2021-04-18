@@ -28,6 +28,13 @@ My Proxmox host is installed onto a small ssd drive. This leaves only ~150g of s
 https://dns.he.net/docs.html
 curl "https://dyn.dns.he.net/nic/update" -d "hostname=dyn.example.com" -d "password=password"
 
+#### Upgrading software
+
+- Import hosts file from dns box into dev machine
+- Delete old dns box from proxmox
+- list then remove it from state
+- provision and deploy
+
 ## Plex and friends
 
 Settings to minimize transcoding:

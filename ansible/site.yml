@@ -1,6 +1,6 @@
 # Infra
 - import_playbook: vpn.yml
-- import_playbook: pihole.yml
+- import_playbook: adguard.yml
 - import_playbook: files.yml
 - import_playbook: metrics.yml
 

@@ -1,0 +1,96 @@
+---
+- hosts: adguard
+  gather_facts: no
+  vars:
+    adguard_path: /opt/adguard
+  
+  handlers:
+    - import_tasks: handlers/global.yml
+    - name:    reload systemctl
+      command: systemctl daemon-reload
+    - name:    reload systemd-resolved
+      command: systemctl restart systemd-resolved
+    - name:    restart adguard
+      service:
+        name:  AdGuardHome
+        state: restarted
+  
+  pre_tasks:
+    - name: Include Common
+      include_tasks: common.yml
+  
+  tasks:
+    - name: Install required system packages
+      apt:  name={{ item }} state=latest update_cache=yes
+      loop:
+        - python3-passlib
+        - python3-bcrypt
+
+    - name: Encode ADMIN_PASSWORD
+      shell: |
+        python3 -c 'from passlib.hash import bcrypt; print(bcrypt.hash("{{ ADMIN_PASSWORD }}"))'
+      register: admin_pwd_encode
+
+    - set_fact: 
+        DNS_ADMIN_PASSWORD: "{{ admin_pwd_encode.stdout }}"
+
+    - name: Uncomment line from /etc/ssh/sshd_config
+      lineinfile:
+        dest: /etc/systemd/resolved.conf
+        regexp: '^#\s*DNSStubListener.*$'
+        line: 'DNSStubListener=no'
+      notify: reload systemd-resolved
+
+    - name: ensure base directory exists
+      file:
+        dest: "{{ adguard_path }}"
+        recurse: yes
+        state: directory
+
+    - name: check if adguard is already installed
+      stat:
+        path: "{{ adguard_path }}"
+      register: adguard_home_executable_stat
+
+    # - name: check adguard version if it is already installed
+    #   command: "{{ adguard_path }}/AdGuardHome --help"
+    #   register: adguard_home_version_exists_check
+    #   check_mode: no
+    #   changed_when: adguard_home_version_exists_check.stderr.find('version v' + adguard_home_version) == -1
+    #   failed_when: adguard_home_version_exists_check.rc != 64
+    #   when: adguard_home_executable_stat.stat.exists
+
+    - name: download adguard-home archive
+      get_url:
+        url: https://static.adguard.com/adguardhome/release/AdGuardHome_linux_amd64.tar.gz
+        dest: /tmp
+      #when: not adguard_home_executable_stat.stat.exists
+
+    - name: unarchive adguard-home
+      unarchive:
+        copy: no
+        src: /tmp/AdGuardHome_linux_amd64.tar.gz
+        dest: "{{ adguard_path }}"
+      #when:  not adguard_home_executable_stat.stat.exists
+      notify: restart adguard
+
+    # TODO: Merge this with the installed yaml instead of an overwrite
+    - name: write adguard-home config
+      template:
+        src: dns/AdGuardHome.yaml
+        dest: /opt/adguard/AdGuardHome/AdGuardHome.yaml
+      notify: restart adguard
+
+    - name: setup systemd service unit file
+      template:
+        src: dns/service.j2
+        dest: /etc/systemd/system/AdGuardHome.service
+      notify:
+        - restart adguard
+        - reload systemctl
+
+    - name: ensure service is enabled
+      service:
+        name:    AdGuardHome
+        state:   started
+        enabled: yes
