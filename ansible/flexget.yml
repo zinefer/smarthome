@@ -18,6 +18,25 @@
         - gpg
         - python3
         - python3-pip
+        - git
+        - golang
+        - jq
+        - curl
+        - ffmpeg
+    
+    # - name: Add another bin dir to system-wide $PATH.
+    #   when: ansible_env.PATH is not search('/root/go/bin')
+    #   copy:
+    #     dest: /etc/profile.d/custom-path.sh
+    #     content: 'PATH=$PATH:/root/go/bin'
+
+    - name: add /home/flexget/go/bin to path
+      lineinfile:
+        dest: /etc/environment
+        state: present
+        backrefs: yes
+        regexp: 'PATH=(["]*)((?!.*?/home/flexget/go/bin).*?)(["]*)$'
+        line: "PATH=\\1\\2:/home/flexget/go/bin\\3"
 
     - name: Create group
       group:
@@ -29,7 +48,7 @@
       user:
         name:  flexget
         group: flexget
-        createhome: false
+        createhome: true
     
     - name: Install Flexget
       pip:
@@ -53,3 +72,48 @@
           -c /mnt/config/flexget/config.yml
           execute
         minute: "*/5"
+
+    - name: Clone drOVER
+      git:
+        repo: https://github.com/zinefer/drover.git
+        dest: /usr/local/drover
+    
+    - name: Chown drOVER directory
+      file:
+        path: /usr/local/drover
+        state: directory
+        mode: '0755'
+        owner: flexget
+        group: flexget
+
+    - name: Symlink mounted drOVER settings
+      file:
+        src:   /mnt/config/drover/.settings.json
+        dest:  /usr/local/drover/.settings.json
+        state: link
+    
+    - name: Symlink mounted drOVER database
+      file:
+        src:   /mnt/config/drover/.seen
+        dest:  /usr/local/drover/.seen
+        state: link
+    
+    - name: Install drOVER
+      shell: ./Taskfile.sh install
+      args:
+        chdir: /usr/local/drover
+      become: yes
+      become_user: flexget
+
+    # Every 2nd hour from 8 through 16, Monday through Friday
+    - name: Set crontab schedule for drOVER
+      cron:
+        name: Execute drOVER
+        user: flexget
+        job: >-
+          cd /usr/local/drover &&
+          /usr/bin/flock -n /tmp/drover.lockfile
+          './Taskfile.sh download-new "/mnt/media/tv"'
+        minute: "0"
+        hour: 8-16/2
+        day: 1-5

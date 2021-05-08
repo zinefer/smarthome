@@ -280,8 +280,12 @@ module "flexget_container" {
 
   name     = "flexget"
   ip       = "192.168.47.35"
+  cores    = 4
+  memory   = 2048
+  disksize = 3
   mounts = [
     {mp="/mnt/config/flexget", volume="/mnt/pve/hot/config/flexget"},
+    {mp="/mnt/config/drover",  volume="/mnt/pve/hot/config/drover"},
     {mp="/mnt/downloads",      volume="/mnt/pve/cold/public/downloads"},
     {mp="/mnt/media",          volume="/mnt/pve/cold/public/media"},
   ]
