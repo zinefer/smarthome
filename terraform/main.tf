@@ -215,11 +215,12 @@ module "sonarr_container" {
     proxmox = proxmox
   }
 
-  os = "ubuntu-20.04-standard_20.04-1_amd64.tar.gz"
+  os = "ubuntu-18.04-standard_18.04.1-1_amd64.tar.gz"
 
   name     = "sonarr"
   ip       = "192.168.47.32"
-  memory   = 512
+  memory   = 1024
+  disksize = 3
   mounts = [
     {mp="/mnt/config/sonarr", volume="/mnt/pve/hot/config/sonarr"},
     {mp="/mnt/downloads",     volume="/mnt/pve/cold/public/downloads"},

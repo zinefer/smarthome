@@ -3,7 +3,7 @@ Description=Sonarr Daemon
 After=syslog.target network.target
 
 [Service]
-ExecStart=/usr/bin/mono /opt/NzbDrone/NzbDrone.exe -nobrowser -data=/mnt/config/sonarr
+ExecStart=/usr/bin/mono /usr/lib/sonarr/bin/Sonarr.exe -nobrowser -data=/mnt/config/sonarr
 Type=simple
 User=sonarr
 Group=sonarr

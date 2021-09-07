@@ -8,7 +8,7 @@
       command: systemctl daemon-reload
     - name: Restart Sonarr service
       service: 
-        name:  sonarr
+        name:  mysonarr
         state: restarted
 
   pre_tasks:
@@ -39,17 +39,24 @@
 
     - name: Ensure the Sonarr GPG key has been imported
       apt_key:
-        url:   http://keyserver.ubuntu.com/pks/lookup?op=get&search=0xA236C58F409091A18ACA53CBEBFF6B99D9B78493
+        url:   http://keyserver.ubuntu.com/pks/lookup?op=get&search=0x2009837CBFFD68F45BC180471F4F90DE2A9B4BF8
         state: present
     
     - name: Ensure the Sonarr repository is present
       apt_repository:
-        repo:  deb http://apt.sonarr.tv/ master main
+        repo:  deb http://apt.sonarr.tv/ubuntu bionic main
         state: present
+
+    # Prevent apt from writing a service file
+    - name: Create symbolic link 
+      file:
+        src: /dev/null
+        dest: /etc/systemd/system/sonarr.service
+        state: link
 
     - name: Install Sonarr
       apt:
-        name: nzbdrone
+        name: sonarr
 
     - include_tasks: tasks/forward-port.yml
       vars:
@@ -59,7 +66,7 @@
     - name: Deploy Sonarr service manifest
       template:
         src: sonarr/service.j2
-        dest: /etc/systemd/system/sonarr.service
+        dest: /etc/systemd/system/mysonarr.service
         owner: root
         group: root
         mode: 0600
@@ -69,6 +76,7 @@
     
     - name: Ensure the Sonarr service is running and enabled on boot
       service:
-        name: sonarr 
+        name: mysonarr 
         state: started
         enabled: yes
+        daemon_reload: yes

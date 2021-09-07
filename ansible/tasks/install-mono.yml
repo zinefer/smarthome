@@ -8,11 +8,12 @@
     url:   http://keyserver.ubuntu.com/pks/lookup?op=get&search=0x3FA7E0328081BFF6A14DA29AA6A19B38D3D831EF
     state: present
 
-- name: Ensure the Mono Xamarin APT repository is present
+- name: Ensure the pinned Mono APT repository is present
   apt_repository:
-    repo:  deb http://download.mono-project.com/repo/debian stable-bionic main
+    repo:  deb http://download.mono-project.com/repo/ubuntu stable-bionic/snapshots/5.20.1.34 main
     state: present
 
 - name: Install Mono
   apt:
-    name: mono-devel 
+    name: mono-devel=5.20.1.34*
+    update_cache: yes
