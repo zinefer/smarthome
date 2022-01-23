@@ -1,6 +1,29 @@
-# Smarthome
+# 🧬🏡 Smarthome
 
-## Proxmox host setup
+This repository contains high level configuration for a collection of devices and software that I use to power my smarthome.
+
+![smarthome](docs/smarthome.drawio.png)
+
+## Devices
+
+### Network/Rack
+
+- UDM Pro
+- UAP-6-LR
+- UAP-6-LITE
+- Eaton 9130
+
+### Compute
+
+- Supermicro SYS-5028D-TN4T
+
+### Storage
+
+### IoT
+
+## Software
+
+### Proxmox host setup
 
 - Setup storage
     - hot
@@ -9,6 +32,7 @@
 - Download Ubuntu 19.10 and Debian 9 LXC templates
     - `pveam available`
     - `pveam download local ubuntu-19.10-standard_19.10-1_amd64.tar.gz`
+    - `pveam download local ubuntu-18.04-standard_18.04.1-1_amd64.tar.gz`
     - `pveam download local ubuntu-20.04-standard_20.04-1_amd64.tar.gz`
 - Import a ssh key to proxmox host, use same key as var to terraform
 - The very first VPN route import to proxmox probably wont take, needs a reboot
@@ -35,7 +59,7 @@ curl "https://dyn.dns.he.net/nic/update" -d "hostname=dyn.example.com" -d "passw
 - list then remove it from state
 - provision and deploy
 
-## Plex and friends
+### Plex and friends
 
 Settings to minimize transcoding:
 
