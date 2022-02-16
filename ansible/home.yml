@@ -50,7 +50,7 @@
         content: |
           username=hassio
           password={{ ADMIN_PASSWORD }}
-        dest: "/root/.smbcredentials"
+        dest: /root/.smbcredentials
         mode: 0600
 
     - name: Mount config directory
@@ -71,18 +71,34 @@
       vars:
         in_port:  '80'
         out_port: '8123'
+
+    - name: Set DNS config in resolv.conf
+      copy:
+        content: |
+          nameserver 192.168.47.1
+        dest: /etc/resolvconf/resolv.conf.d/base      
     
-    - name: Download installer.sh
+    - name: Get latest os-agent info
+      uri:
+        url: https://api.github.com/repos/home-assistant/os-agent/releases/latest
+        return_content: true
+      register: osagent_latest
+
+    - name: Download os-agent
       get_url:
-        url: https://raw.githubusercontent.com/home-assistant/installer/master/installer.sh
-        dest: /home/debian/installer.sh
+        url: "https://github.com/home-assistant/os-agent/releases/download/{{ osagent_latest.json.name }}/os-agent_{{ osagent_latest.json.name }}_linux_x86_64.deb"
+        dest: /home/debian/os-agent-{{ osagent_latest.json.name }}.deb
+
+    - name: Install os-agent
+      apt: deb="/home/debian/os-agent-{{ osagent_latest.json.name }}.deb"
+
+    - name: Check that os-agent installed
+      shell: gdbus introspect --system --dest io.hass.os --object-path /io/hass/os
     
-    - name: Install home assistant supervised
-      shell: |
-        set timeout 300
-        spawn /bin/bash installer.sh
-        expect "*N/y"
-        send "y\n"
-        expect eof
-      args:
-        executable: /usr/bin/expect
+    - name: Download Home Assistant Debian Package
+      get_url:
+        url: https://github.com/home-assistant/supervised-installer/releases/latest/download/homeassistant-supervised.deb
+        dest: /home/debian/homeassistant-supervised.deb
+
+    - name: Install Home Assistant
+      apt: deb="/home/debian/homeassistant-supervised.deb"
