@@ -24,6 +24,10 @@
         - curl
         - ffmpeg
     
+    - name: Set timezone
+      timezone:
+        name: "{{ TIMEZONE }}"
+    
     # - name: Add another bin dir to system-wide $PATH.
     #   when: ansible_env.PATH is not search('/root/go/bin')
     #   copy:
@@ -111,9 +115,10 @@
         name: Execute drOVER
         user: flexget
         job: >-
-          cd /usr/local/drover &&
+          (export PATH=$PATH:~/go/bin; cd /usr/local/drover &&
           /usr/bin/flock -n /tmp/drover.lockfile
-          './Taskfile.sh download-new "/mnt/media/tv"'
+          -c './Taskfile.sh download-new "/mnt/media/tv"')
+          >> /mnt/config/drover/drover.log 2>&1
         minute: "0"
         hour: 8-16/2
-        day: 1-5
+        weekday: 1-5
