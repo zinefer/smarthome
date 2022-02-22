@@ -173,6 +173,8 @@ module "torrents_container" {
     proxmox = proxmox
   }
 
+  os = "ubuntu-20.04-standard_20.04-1_amd64.tar.gz"
+
   name     = "torrents"
   ip       = "192.168.47.30"
   memory   = 512

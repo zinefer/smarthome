@@ -27,9 +27,10 @@
     rtorrent_max_uploads: 300
 
   handlers:
+    - import_tasks: handlers/global.yml
     - name: restart php
       service:
-        name:  php7.3-fpm
+        name:  php7.4-fpm
         state: restarted
         use:   upstart
 
@@ -69,15 +70,15 @@
         - libssl-dev 
         - mediainfo
         - procps
-        - python
-        - python-pip
+        - python3
+        - python3-pip
         - sox
         - ffmpeg
 
     - name: Set date.timezone for CLI
       become: true
       lineinfile:
-        dest: /etc/php/7.3/cli/php.ini
+        dest: /etc/php/7.4/cli/php.ini
         regexp: "date.timezone ="
         line: 'date.timezone = "{{ TIMEZONE }}"'
       notify: restart php
@@ -108,12 +109,12 @@
         path: /var/www
         state: absent
     
-    - name: Clone ruTorrent 3.9
+    - name: Clone ruTorrent 3.10
       git:
         repo: https://github.com/Novik/ruTorrent.git
         force: true
         dest: /var/www
-        version: v3.9
+        version: v3.10
         depth: 1
 
     - name: Configure nginx
@@ -138,7 +139,7 @@
           
             location ~ .php$ {
               fastcgi_split_path_info ^(.+\.php)(/.+)$;
-              fastcgi_pass unix:/run/php/php7.3-fpm.sock;
+              fastcgi_pass unix:/run/php/php7.4-fpm.sock;
               fastcgi_index index.php;
               include fastcgi_params;
               fastcgi_param PATH /usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin;
@@ -157,6 +158,12 @@
       subversion:
         export: yes
         force:  yes
+        repo:   https://github.com/exetico/FlatUI/tags/1.0/FlatUI_Dark
+        dest:   /var/www/plugins/theme/themes/FlatUI_Dark1.0
+    - name: Clone FlatUI theme
+      subversion:
+        export: yes
+        force:  yes
         repo:   https://github.com/exetico/FlatUI/trunk/FlatUI_Dark
         dest:   /var/www/plugins/theme/themes/FlatUI_Dark
 
@@ -167,7 +174,7 @@
       file:
         path:  /var/www/share
         state: absent
-      when: share.stat.islnk is not defined or share.stat.islnk is false
+      when: share.stat.islnk is not defined or not share.stat.islnk
 
     - name: Link rutorrent config directory
       file:
@@ -185,7 +192,7 @@
 
     - name: Enable/start service php-fpm
       service:
-        name:    php7.3-fpm
+        name:    php7.4-fpm
         enabled: yes
         state:   started
         use:     upstart
