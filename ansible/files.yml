@@ -27,14 +27,20 @@
       loop: "{{ USERS }}"
       loop_control:
         label: "{{ item.name }}"
-      when: "item.password is defined"
+      when: 
+        - "item.password is defined"
+        - "item.name is defined"
+    
     - name: Set samba_users vars
       set_fact:
         samba_users: "{{ samba_users + [ {'name': item.name, 'password': item.password } ] }}"
       loop: "{{ USERS }}"
       loop_control:
         label: "{{ item.name }}"
-      when: "item.password is defined"
+      when: 
+        - "item.password is defined"
+        - "item.name is defined"
+    
     - name: Create user share directory
       file:
         path: "/mnt/users/{{ item.name }}"
@@ -45,14 +51,44 @@
       loop: "{{ USERS }}"
       loop_control:
         label: "{{ item.name }}"
-      when: "item.password is defined"
+      when: 
+        - "item.password is defined"
+        - "item.name is defined"
+
+    - name: Set samba_ios_share_template
+      set_fact:
+        samba_ios_share_template:
+          - name: fruit
+          - name: streams_xattr
+    
+    - name: "Ansible | List all known variables and facts"
+      debug:
+        var: samba_ios_share_template
+
     - name: Set samba_shares vars
       set_fact:
-        samba_shares: "{{ samba_shares + [ {'name': item.name, 'path': '/mnt/users/' + item.name, 'directory_mode': '0777', 'create_mode': '0777', 'valid_users': item.name + ' admin', 'write_list': item.name + ' admin', 'owner': 'nobody', 'group': 'nogroup'} ] }}"
+        samba_shares: '{{ samba_shares | default([]) + merged_item }}'
       loop: "{{ USERS }}"
       loop_control:
         label: "{{ item.name }}"
-      when: "item.password is defined"
+      when: 
+        - "item.password is defined"
+        - "item.name is defined"
+      vars:
+        merged_item:
+          - name: '{{ item.name }}'
+            path: '{{ "/mnt/users/" + item.name }}'
+            directory_mode: '0777'
+            create_mode: '0777'
+            valid_users: '{{ item.name + " admin" }}'
+            write_list: '{{ item.name + " admin" }}'
+            owner: 'nobody'
+            group: 'nogroup'
+            vfs_objects: '{{ item.ios | default(False) | ternary(samba_ios_share_template, omit) }}'
+    
+    - name: "Ansible | List all known variables and facts"
+      debug:
+        var: samba_shares
 
   roles:
   - role: bertvv.samba
