@@ -105,6 +105,10 @@ function renew {
     deploy $TARGET
 }
 
+function clear-pwd {
+    echo RELOADAGENT | gpg-connect-agent
+}
+
 function help {
     echo "$0 <task> <args>"
     echo "Tasks:"
