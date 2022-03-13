@@ -25,6 +25,7 @@
       loop:
         - python3-passlib
         - python3-bcrypt
+        - curl
 
     - name: Encode ADMIN_PASSWORD
       shell: |
@@ -94,3 +95,9 @@
         name:    AdGuardHome
         state:   started
         enabled: yes
+
+    - name: Create dydns job
+      cron:
+        name: update dydns
+        minute: "*/5"
+        job: curl "https://dyn.dns.he.net/nic/update" -d "hostname={{ HOUSE_DOMAIN }}" -d "password={{ dydns_password }}"

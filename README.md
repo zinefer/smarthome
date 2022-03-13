@@ -42,12 +42,17 @@ This repository contains high level configuration for a collection of devices an
 - Pass the usbdevice through to the home vm `qm set 10010 -usb0 host=10c4:8a2a` (reboot)
 - Set DNS under the proxmox node or nothing can get to the internet
 - `qrencode -t ansiutf8 < /etc/wireguard/jphone.conf`
-- Add a vpn backroute to the gateway
-- Forward ports: `51337 -> 186` and `51820 -> 3`
 
 My Proxmox host is installed onto a small ssd drive. This leaves only ~150g of space in local-lvm. I have used the raid card to take ~100g from hot storage and use it for virtual disks.
 
-### DNS
+### Network
+
+- Set DNS to `5` then `1.1.1.1`
+- Add a vpn backroute to the gateway
+- Forward ports: `51337 -> 186` and `51820 -> 3`
+
+
+### Public DNS
 
 https://dns.he.net/docs.html
 curl "https://dyn.dns.he.net/nic/update" -d "hostname=dyn.example.com" -d "password=password"
