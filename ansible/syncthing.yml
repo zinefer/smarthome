@@ -1,0 +1,113 @@
+---
+- hosts: syncthing
+  gather_facts: no
+
+  handlers:
+    - import_tasks: handlers/global.yml
+    - name:    reload systemctl
+      command: systemctl daemon-reload
+    - name:    reload systemd-resolved
+      command: systemctl restart systemd-resolved
+    - name:    restart syncthing
+      service:
+        name:  SyncThing
+        state: restarted
+
+  vars:
+    syncthing:
+      user: syncthing
+      home: /mnt/config/syncthing
+      address: 0.0.0.0:8080
+      listen: 0.0.0.0:22000
+      announce:
+        local: true
+        global: true
+      upnp: true
+
+  pre_tasks:
+    - name: Include Common
+      include_tasks: common.yml
+    - name: Install iptables-persistent
+      include_tasks: tasks/install-iptables-persistent.yml
+
+  tasks:
+    - name: Install syncthing
+      apt:
+        name:  syncthing
+        state: present
+
+    - name: Create group
+      group:
+        name:   syncthing
+        state:  present
+        system: true
+
+    - name: Create user
+      user:
+        name:  syncthing
+        group: syncthing
+        createhome: true
+
+    - include_tasks: tasks/forward-port.yml
+      vars:
+        in_port:  '80'
+        out_port: '8080'
+
+    - name: setup systemd service unit file
+      template:
+        src: syncthing/service.j2
+        dest: /etc/systemd/system/SyncThing.service
+      notify:
+        - restart syncthing
+        - reload systemctl
+
+    - name: ensure service is enabled
+      service:
+        name:    SyncThing
+        state:   started
+        enabled: yes
+
+    - name: Wait until the syncthing config is present
+      wait_for:
+        path: "{{ syncthing.home }}/config.xml"
+        timeout: 5
+
+    - name: config.xml | webinterface address
+      become: true
+      become_user: "{{ syncthing.user }}"
+      lineinfile: dest={{ syncthing.home }}/config.xml
+                  regexp="<address>[^<]+</address>"
+                  line="        <address>{{ syncthing.address }}</address>"
+      notify: restart syncthing
+
+    - name: config.xml | listen address
+      become: true
+      become_user: "{{ syncthing.user }}"
+      lineinfile: dest={{ syncthing.home }}/config.xml
+                  regexp="<listenAddress>[^<]+</listenAddress>"
+                  line="        <listenAddress>{{ syncthing.listen }}</listenAddress>"
+      notify: restart syncthing
+
+    - name: config.xml | localAnnounceEnabled
+      become: true
+      become_user: "{{ syncthing.user }}"
+      lineinfile: dest={{ syncthing.home }}/config.xml
+                  regexp="<localAnnounceEnabled>[^<]+</localAnnounceEnabled>"
+                  line="        <localAnnounceEnabled>{{ syncthing.announce.local|lower }}</localAnnounceEnabled>"
+      notify: restart syncthing
+
+    - name: config.xml | globalAnnounceEnabled
+      become: true
+      become_user: "{{ syncthing.user }}"
+      lineinfile: dest={{ syncthing.home }}/config.xml
+                  regexp="<globalAnnounceEnabled>[^<]+</globalAnnounceEnabled>"
+                  line="        <globalAnnounceEnabled>{{ syncthing.announce.global|lower }}</globalAnnounceEnabled>"
+      notify: restart syncthing
+
+    - name: config.xml | upnpEnabled
+      become: true
+      become_user: "{{ syncthing.user }}"
+      lineinfile: dest={{ syncthing.home }}/config.xml
+                  regexp="<upnpEnabled>[^<]+</upnpEnabled>"
+                  line="        <upnpEnabled>{{ syncthing.upnp|lower }}</upnpEnabled>"
+      notify: restart syncthing

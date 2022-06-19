@@ -13,6 +13,8 @@ backups.pintail    ansible_host=192.168.47.8
 
 [home]
 home.pintail       ansible_host=192.168.47.10 ansible_user=debian ansible_become=yes
+[syncthing]
+syncthing.pintail  ansible_host=192.168.47.11
 
 [code]
 code.pintail       ansible_host=192.168.47.20

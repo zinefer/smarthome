@@ -147,6 +147,24 @@ module "home_vm" {
   provisioner = "ssh -oStrictHostKeyChecking=no root@proxmox.pintail 'qm set 10010 -usb0 host=10c4:8a2a'"
 }
 
+module "syncthing_container" {
+  source = "./modules/container"
+  ssh_public_keys = var.proxmox_pub_keys
+
+  providers = {
+    proxmox = proxmox
+  }
+
+  os = "ubuntu-20.04-standard_20.04-1_amd64.tar.gz"
+
+  name     = "syncthing"
+  ip       = "192.168.47.11"
+  mounts = [
+    {mp="/mnt/skunkworks",       volume="/mnt/pve/hot/skunkworks"},
+    {mp="/mnt/config/syncthing", volume="/mnt/pve/hot/config/syncthing"}
+  ]
+}
+
 module "code_container" {
   source = "./modules/container"
   ssh_public_keys = var.proxmox_pub_keys
